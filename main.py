@@ -1,18 +1,18 @@
-import requests as re
-from bs4 import BeautifulSoup as bs
+import requests
+from bs4 import BeautifulSoup
 
 def main():
-    url = "https://www.hijiki-blog.org/2022/01/01/light-novel-recommend/"
-    r = re.get(url)
+    url = "https://dengekibunko.jp/product/newrelease-bunko.html"
+    r = requests.get(url)
     
-    soup = bs(r.content, "html.parser")
+    soup = BeautifulSoup(r.content, "html.parser")
     
-    print(soup.select("h1"))
+    elms = soup.find_all("a")
+    print(elms)
+    #print(soup.select("h1"))
     
     #print(r.headers)
     #print(r.content)
-    
-    
     
     
     
