@@ -16,6 +16,51 @@ class label:
         self.title = title_name
         self.date = date_caractor
         self.tag = tag_name
+        
+def add_notion(title, tag, date):
+    notion_url = 'https://api.notion.com/v1/pages'
+
+    api_key = main_local.api_key
+    databaseid = main_local.databaseid
+    
+    headers = {
+        "Accept": "application/json",
+        "Notion-Version": "2022-06-28",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + api_key
+    }
+
+    payload = {
+        "parent": {
+            "database_id": databaseid
+        },
+        "properties": {
+            "名前": {
+                "title": [
+                    {
+                        "text": {
+                            "content": title
+                        }
+                    }
+                ],
+            },
+            "レーベル": {
+                "multi_select": [
+                    {
+                        "name": tag
+                    }
+                ],
+            },
+            "発売日": {
+                "date": {
+                    "start": date
+                }
+            },
+        }
+    }
+
+    response = requests.post(notion_url, json=payload, headers=headers)
+    
     
 
 def dengeki(all_list):
@@ -73,53 +118,10 @@ def main():
     #print(r.headers)
     #print(r.content)
 
+    for i in range(len(all_list)):
+        add_notion(all_list[i].title, all_list[i].tag, all_list[i].date)
 
-    notion_url = 'https://api.notion.com/v1/pages'
-
-    api_key = main_local.api_key
-    databaseid = main_local.databaseid
-    title = all_list[0].title
-    tag_name = all_list[0].tag
-    date = all_list[0].date
-
-    headers = {
-        "Accept": "application/json",
-        "Notion-Version": "2022-06-28",
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + api_key
-    }
-
-    payload = {
-        "parent": {
-            "database_id": databaseid
-        },
-        "properties": {
-            "名前": {
-                "title": [
-                    {
-                        "text": {
-                            "content": title
-                        }
-                    }
-                ],
-            },
-            "レーベル": {
-                "multi_select": [
-                    {
-                        "name": tag_name
-                    }
-                ],
-            },
-            "発売日": {
-                "date": {
-                    "start": date
-                    #"end": null
-                }
-            },
-        }
-    }
-
-    response = requests.post(notion_url, json=payload, headers=headers)
+    
 
     #result_dict = response.json()
     #result = result
