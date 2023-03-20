@@ -5,35 +5,61 @@ from bs4 import BeautifulSoup
 import time
 import json
 import datetime
+import re
 
 #import module
 import main_local
 
 
 class label:
-    def __init__(self, title_name, date, tag_name):
+    def __init__(self, title_name, date_caractor, tag_name):
         self.title = title_name
+        self.date = date_caractor
         self.tag = tag_name
     
 
-def dengeki(list):
+def dengeki(all_list):
     #電撃文庫の今月と来月発売の作品タイトルと発売日を抜粋
     #タイトルと発売日を順番に表示するにはループを使う。elmsは配列だから、それで回す。
     url = "https://dengekibunko.jp/product/newrelease-bunko.html"
 
+    #リクエストの前には必ずsleepを入れる。
     time.sleep(1)
     r = requests.get(url)
 
     soup = BeautifulSoup(r.content, "html.parser")
     
-    elms = s.select(".p-books-media__title > a")
+    elms = soup.select(".p-books-media__title > a")
     tag = "電撃"
     
-    for elm in elms:
-        cl = label(elm.text, date, tag)
-        list.append(cl)
+    #dateをISO8601に合わせる。まずは発売日の文字列をfind_allしてくる。
+    date_elms = soup.find_all("td", text=re.compile("日発売"))
+    date_iso_list = []
+    for elm in date_elms:
+        d = elm.text
+        d_list = list(d)
+        if d_list[6] == "月":
+            d_list.insert(5 ,"0")
+        if d_list[9] == "日":
+            d_list.insert(8, "0")
+            
+        d = ''.join(d_list)
         
-    return list
+        d = d.replace("年", "-")
+        d = d.replace("月", "-")
+        d = d.replace("日発売", "")
+        
+        date_iso_list.append(d)
+        
+    #スマホ用とPC用で、要素が重複。インデックスが奇数のものを削除。
+    del date_iso_list[1::2]
+    
+    #各作品のタイトルと発売日とレーベルを変数とするインスタンスのリストを生成。
+    for i in range(len(elms)):
+        cl = label(elms[i].text, date_iso_list[i], tag)
+        all_list.append(cl)
+        
+    return all_list
 
 
 def main():
@@ -81,8 +107,14 @@ def main():
                     {
                         "name": tag_name
                     }
-                ]
-            }
+                ],
+            },
+            "発売日": {
+                "date": {
+                    "start": "2023-03-22"
+                    #"end": null
+                }
+            },
         }
     }
 
