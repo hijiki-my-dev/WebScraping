@@ -80,6 +80,7 @@ def main():
     databaseid = main_local.databaseid
     title = all_list[0].title
     tag_name = all_list[0].tag
+    date = all_list[0].date
 
     headers = {
         "Accept": "application/json",
@@ -111,7 +112,7 @@ def main():
             },
             "発売日": {
                 "date": {
-                    "start": "2023-03-22"
+                    "start": date
                     #"end": null
                 }
             },
