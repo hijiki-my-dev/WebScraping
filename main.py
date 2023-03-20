@@ -160,15 +160,41 @@ def mf(all_list):
             
     return all_list
 
-
+def gagaga(all_list):
+    url = "https://gagagabunko.jp/release/index.html"
     
+    time.sleep(5)
+    r = requests.get(url)
+    
+    soup = BeautifulSoup(r.content, "html.parser")
+    
+    elms = soup.select(".content > #title > h3")
+    tag = "ガガガ"
+    
+    dt_now = datetime.datetime.now()
+    date = ""
+    today = dt_now.day
+    d_today = list(str(datetime.date.today()))
+    if today < 18:
+        d_today[-1] = "8"
+        d_today[-2] = "1"
+        
+        
+    
+    for i in range(len(elms)):
+        cl = label(elms[i].text, date, tag)
+        all_list.append(cl)
+    return all_list
 
 def main():
     all_list = []
     #all_list = dengeki(all_list)
     #all_list = mf(all_list)
-
-
+    all_list = gagaga(all_list)
+    #all_list = fanta(all_list)
+    #all_list = ga(all_list)
+    #all_list = sneaker(all_list)
+    
     
     #現在のデータベースの状況を取得。タイトルなども取得できる。
     notion_url_db = main_local.notionurldb
@@ -186,4 +212,8 @@ def main():
     
     
 if __name__ == "__main__":
+    d_today = str(datetime.date.today())
+
+    print(d_today)
+    
     main()
