@@ -11,6 +11,7 @@ import re
 import main_local
 
 
+
 class label:
     def __init__(self, title_name, date_caractor, tag_name):
         self.title = title_name
@@ -86,7 +87,7 @@ def dengeki(all_list):
     url = "https://dengekibunko.jp/product/newrelease-bunko.html"
 
     #リクエストの前には必ずsleepを入れる。
-    time.sleep(3)
+    time.sleep(5)
     r = requests.get(url)
 
     soup = BeautifulSoup(r.content, "html.parser")
@@ -123,17 +124,51 @@ def dengeki(all_list):
         
     return all_list
 
+def mf(all_list):
+    url = "https://mfbunkoj.jp/product/new-release.html"
+    
+    time.sleep(5)
+    r = requests.get(url)
+    
+    soup = BeautifulSoup(r.content, "html.parser")
+    
+    elms = soup.select(".detail > h2 > a")
+    tag = "MF"
+    
+    date_elms = soup.find_all("p", text = re.compile("発売日"))
+    date_iso_list = []
+    for elm in date_elms:
+        d = elm.text
+        d_list = list(d)
+        if d_list[10] == "月":
+            d_list.insert(9, "0")
+        if d_list[13] == "日":
+            d_list.insert(12, "0")
+            
+        d = ''.join(d_list)
+        
+        d = d.replace("発売日：", "")
+        d = d.replace("年", "-")
+        d = d.replace("月", "-")
+        d = d.replace("日", "")
+        
+        date_iso_list.append(d)
+        
+    for i in range(len(elms)):
+        cl = label(elms[i].text, date_iso_list[i], tag)
+        all_list.append(cl)
+            
+    return all_list
+
+
+    
 
 def main():
     all_list = []
-    all_list = dengeki(all_list)
+    #all_list = dengeki(all_list)
+    #all_list = mf(all_list)
 
 
-    #elms = soup.find_all("a")
-    #print(soup.select("h1"))
-
-    #print(r.headers)
-    #print(r.content)
     
     #現在のデータベースの状況を取得。タイトルなども取得できる。
     notion_url_db = main_local.notionurldb
@@ -146,11 +181,7 @@ def main():
         else:
             add_notion(all_list[i].title, all_list[i].tag, all_list[i].date)
 
-    
 
-    #result_dict = response.json()
-    #result = result
-    
     
     
     
