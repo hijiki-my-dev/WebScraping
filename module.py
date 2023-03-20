@@ -9,8 +9,7 @@ def title_only(s):
     #タイトルと発売日を順番に表示するにはループを使う。elmsは配列だから、それで回す。
     elms = s.select(".p-books-media__title > a")
     
-    for i in elms:
-        print(i.contents)
+    return elms
 
 
 
