@@ -207,12 +207,51 @@ def gagaga(all_list):
         all_list.append(cl)
     return all_list
 
+def fantasia(all_list):
+    url = "https://fantasiabunko.jp/product/"
+    
+    time.sleep(5)
+    r = requests.get(url)
+    
+    soup = BeautifulSoup(r.content, "html.parser")
+    
+    elms = soup.select(".detail > .head > h3 > a")
+    tag = "ファンタジア"
+    
+    date_elms = soup.find_all("p", text = re.compile("発売日"))
+    date_iso_list = []
+    for elm in date_elms:
+        d = elm.text
+        d_list = list(d)
+        if d_list[10] == "月":
+            d_list.insert(9, "0")
+        if d_list[13] == "日":
+            d_list.insert(12, "0")
+            
+        d = ''.join(d_list)
+        
+        d = d.replace("発売日：", "")
+        d = d.replace("年", "-")
+        d = d.replace("月", "-")
+        d = d.replace("日", "")
+        
+        date_iso_list.append(d)
+        
+    for i in range(len(elms)):
+        cl = label(elms[i].text, date_iso_list[i], tag)
+        all_list.append(cl)
+            
+    return all_list
+
+
+    
+
 def main():
     all_list = []
     #all_list = dengeki(all_list)
     #all_list = mf(all_list)
-    all_list = gagaga(all_list)
-    #all_list = fanta(all_list)
+    #all_list = gagaga(all_list)
+    all_list = fantasia(all_list)
     #all_list = ga(all_list)
     #all_list = sneaker(all_list)
     
