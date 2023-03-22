@@ -17,6 +17,36 @@ class label:
         self.title = title_name
         self.date = date_caractor
         self.tag = tag_name
+
+#引数はint
+def set_date(sale_day):
+    dt_now = datetime.datetime.now()
+    date = ""
+    today = dt_now.day
+    
+    sale_day_str = str(sale_day)
+    
+    #ISO形式（2023-03-22など）の一文字ずつをリストに格納
+    d_today = list(str(datetime.date.today()))
+    if today < sale_day:
+        d_today[8], d_today[9] = sale_day_str[0], sale_day_str[1]
+        date =  "".join(d_today)
+    else:
+        if dt_now.month == 12:
+            next_year = str(dt_now.year + 1)
+            date = next_year + "-01-" + sale_day_str
+        else:
+            next_month = ""
+            if dt_now.month < 9 :
+                next_month = "0" + str(dt_now.month + 1)
+            else:
+                next_month = str(dt_now.month + 1)
+            d_today[5], d_today[6] = next_month[0], next_month[1]
+            d_today[8], d_today[9] = sale_day_str[0], sale_day_str[1]
+            date =  "".join(d_today)
+    
+    return date
+    
         
 #現在のデータベースに含まれるページ情報を取得して文字列を返す。        
 def get_current(url):
@@ -170,29 +200,7 @@ def gagaga(all_list):
     
     elms = soup.select(".content > #title > h3")
     tag = "ガガガ"
-    
-    dt_now = datetime.datetime.now()
-    date = ""
-    today = dt_now.day
-    
-    #ISO形式（2023-03-22など）の一文字ずつをリストに格納
-    d_today = list(str(datetime.date.today()))
-    if today < 18:
-        d_today[8], d_today[9] = "1", "8"
-        date =  "".join(d_today)
-    else:
-        if dt_now.month == 12:
-            next_year = str(dt_now.year + 1)
-            date = next_year + "-01-18"
-        else:
-            next_month = ""
-            if dt_now.month < 9 :
-                next_month = "0" + str(dt_now.month + 1)
-            else:
-                next_month = str(dt_now.month + 1)
-            d_today[5], d_today[6] = next_month[0], next_month[1]
-            d_today[8], d_today[9] = "1", "8"
-            date =  "".join(d_today)
+    date = set_date(18)
     
     for i in range(len(elms)):
         cl = label(elms[i].text, date, tag)
