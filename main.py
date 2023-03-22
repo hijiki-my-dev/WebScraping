@@ -174,12 +174,25 @@ def gagaga(all_list):
     dt_now = datetime.datetime.now()
     date = ""
     today = dt_now.day
+    
+    #ISO形式（2023-03-22など）の一文字ずつをリストに格納
     d_today = list(str(datetime.date.today()))
     if today < 18:
-        d_today[-1] = "8"
-        d_today[-2] = "1"
-        
-        
+        d_today[8], d_today[9] = "1", "8"
+        date =  "".join(d_today)
+    else:
+        if dt_now.month == 12:
+            next_year = str(dt_now.year + 1)
+            date = next_year + "-01-18"
+        else:
+            next_month = ""
+            if dt_now.month < 9 :
+                next_month = "0" + str(dt_now.month + 1)
+            else:
+                next_month = str(dt_now.month + 1)
+            d_today[5], d_today[6] = next_month[0], next_month[1]
+            d_today[8], d_today[9] = "1", "8"
+            date =  "".join(d_today)
     
     for i in range(len(elms)):
         cl = label(elms[i].text, date, tag)
@@ -214,6 +227,6 @@ def main():
 if __name__ == "__main__":
     d_today = str(datetime.date.today())
 
-    print(d_today)
+    #print(d_today)
     
     main()
