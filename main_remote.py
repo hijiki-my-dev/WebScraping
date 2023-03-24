@@ -2,3 +2,4 @@
 
 api_key = "NotionAPIのシークレットトークン"
 databaseid = "NotionのデータベースID"
+notionurldb = "https://api.notion.com/v1/databases/NotionのデータベースID/query"

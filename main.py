@@ -6,6 +6,7 @@ import time
 import json
 import datetime
 import re
+from dateutil.relativedelta import relativedelta
 
 #import module
 import main_local
@@ -17,6 +18,36 @@ class label:
         self.title = title_name
         self.date = date_caractor
         self.tag = tag_name
+
+#引数はint
+def set_date(sale_day):
+    dt_now = datetime.datetime.now()
+    date = ""
+    today = dt_now.day
+    
+    sale_day_str = str(sale_day)
+    
+    #ISO形式（2023-03-22など）の一文字ずつをリストに格納
+    d_today = list(str(datetime.date.today()))
+    if today < sale_day:
+        d_today[8], d_today[9] = sale_day_str[0], sale_day_str[1]
+        date =  "".join(d_today)
+    else:
+        if dt_now.month == 12:
+            next_year = str(dt_now.year + 1)
+            date = next_year + "-01-" + sale_day_str
+        else:
+            next_month = ""
+            if dt_now.month < 9 :
+                next_month = "0" + str(dt_now.month + 1)
+            else:
+                next_month = str(dt_now.month + 1)
+            d_today[5], d_today[6] = next_month[0], next_month[1]
+            d_today[8], d_today[9] = sale_day_str[0], sale_day_str[1]
+            date =  "".join(d_today)
+    
+    return date
+    
         
 #現在のデータベースに含まれるページ情報を取得して文字列を返す。        
 def get_current(url):
@@ -170,29 +201,107 @@ def gagaga(all_list):
     
     elms = soup.select(".content > #title > h3")
     tag = "ガガガ"
-    
-    dt_now = datetime.datetime.now()
-    date = ""
-    today = dt_now.day
-    d_today = list(str(datetime.date.today()))
-    if today < 18:
-        d_today[-1] = "8"
-        d_today[-2] = "1"
-        
-        
+    date = set_date(18)
     
     for i in range(len(elms)):
         cl = label(elms[i].text, date, tag)
         all_list.append(cl)
     return all_list
 
+def fantasia(all_list):
+    url = "https://fantasiabunko.jp/product/"
+    
+    time.sleep(5)
+    r = requests.get(url)
+    
+    soup = BeautifulSoup(r.content, "html.parser")
+    
+    elms = soup.select(".detail > .head > h3 > a")
+    tag = "ファンタジア"
+    
+    date_elms = soup.find_all("p", text = re.compile("発売日"))
+    date_iso_list = []
+    for elm in date_elms:
+        d = elm.text
+        d_list = list(d)
+        if d_list[10] == "月":
+            d_list.insert(9, "0")
+        if d_list[13] == "日":
+            d_list.insert(12, "0")
+            
+        d = ''.join(d_list)
+        
+        d = d.replace("発売日：", "")
+        d = d.replace("年", "-")
+        d = d.replace("月", "-")
+        d = d.replace("日", "")
+        
+        date_iso_list.append(d)
+        
+    for i in range(len(elms)):
+        cl = label(elms[i].text, date_iso_list[i], tag)
+        all_list.append(cl)
+            
+    return all_list
+
+def ga(all_list):
+    url1 = "https://ga.sbcr.jp/release/month_current/"
+    url2 = "https://ga.sbcr.jp/release/month_next/"
+    
+    time.sleep(5)
+    r1 = requests.get(url1)
+    time.sleep(5)
+    r2 = requests.get(url2)
+    
+    soup1 = BeautifulSoup(r1.content, "html.parser")
+    soup2 = BeautifulSoup(r2.content, "html.parser")
+    
+    elms1 = soup1.select(".newBook_gaBunko_wrap .title_area > .title > a > span")
+    elms2 = soup2.select(".newBook_gaBunko_wrap .title_area > .title > a > span")
+    
+    del elms1[1::2]
+    del elms2[1::2]
+    
+    date1 = list(str(datetime.date.today()))
+    date1[-2], date1[-1] = "1", "5"
+    date1 = "".join(date1)
+    
+    d_today = list(str(datetime.date.today()))
+    date2 = ""    
+    dt_now = datetime.datetime.now()
+    if dt_now.month == 12:
+        next_year = str(dt_now.year + 1)
+        date2 = next_year + "-01-" + "15"
+    else:
+        next_month = ""
+        if dt_now.month < 9 :
+            next_month = "0" + str(dt_now.month + 1)
+        else:
+            next_month = str(dt_now.month + 1)
+        d_today[5], d_today[6] = next_month[0], next_month[1]
+        d_today[8], d_today[9] = "1", "5"
+        date2 =  "".join(d_today)
+    
+    
+    tag = "GA"
+    
+    for i in range(len(elms1)):
+        cl1 = label(elms1[i].text, date1, tag)
+        all_list.append(cl1)
+    for i in range(len(elms2)):
+        cl2 = label(elms2[i].text, date2, tag)
+        all_list.append(cl2)
+        
+    return all_list
+
+
 def main():
     all_list = []
     #all_list = dengeki(all_list)
     #all_list = mf(all_list)
-    all_list = gagaga(all_list)
-    #all_list = fanta(all_list)
-    #all_list = ga(all_list)
+    #all_list = gagaga(all_list)
+    #all_list = fantasia(all_list)
+    all_list = ga(all_list)
     #all_list = sneaker(all_list)
     
     
@@ -212,8 +321,8 @@ def main():
     
     
 if __name__ == "__main__":
-    d_today = str(datetime.date.today())
+    #d_today = str(datetime.date.today())
 
-    print(d_today)
+    #print(d_today)
     
     main()
