@@ -294,6 +294,53 @@ def ga(all_list):
         
     return all_list
 
+def sneaker(all_list):
+    url1 = "https://ga.sbcr.jp/release/month_current/"
+    url2 = "https://ga.sbcr.jp/release/month_next/"
+    
+    time.sleep(5)
+    r1 = requests.get(url1)
+    time.sleep(5)
+    r2 = requests.get(url2)
+    
+    soup1 = BeautifulSoup(r1.content, "html.parser")
+    soup2 = BeautifulSoup(r2.content, "html.parser")
+    
+    elms1 = soup1.select(".newBook_gaBunko_wrap .title_area > .title > a > span")
+    elms2 = soup2.select(".newBook_gaBunko_wrap .title_area > .title > a > span")
+    
+    
+    date1 = list(str(datetime.date.today()))
+    date1[-2], date1[-1] = "1", "5"
+    date1 = "".join(date1)
+    
+    d_today = list(str(datetime.date.today()))
+    date2 = ""    
+    dt_now = datetime.datetime.now()
+    if dt_now.month == 12:
+        next_year = str(dt_now.year + 1)
+        date2 = next_year + "-01-" + "15"
+    else:
+        next_month = ""
+        if dt_now.month < 9 :
+            next_month = "0" + str(dt_now.month + 1)
+        else:
+            next_month = str(dt_now.month + 1)
+        d_today[5], d_today[6] = next_month[0], next_month[1]
+        d_today[8], d_today[9] = "1", "5"
+        date2 =  "".join(d_today)
+    
+    
+    tag = "スニーカー"
+    
+    for i in range(len(elms1)):
+        cl1 = label(elms1[i].text, date1, tag)
+        all_list.append(cl1)
+    for i in range(len(elms2)):
+        cl2 = label(elms2[i].text, date2, tag)
+        all_list.append(cl2)
+        
+    return all_list
 
 def main():
     all_list = []
@@ -301,8 +348,8 @@ def main():
     #all_list = mf(all_list)
     #all_list = gagaga(all_list)
     #all_list = fantasia(all_list)
-    all_list = ga(all_list)
-    #all_list = sneaker(all_list)
+    #all_list = ga(all_list)
+    all_list = sneaker(all_list)
     
     
     #現在のデータベースの状況を取得。タイトルなども取得できる。
