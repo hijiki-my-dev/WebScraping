@@ -294,6 +294,52 @@ def ga(all_list):
         
     return all_list
 
+def sneaker(all_list):
+    dt_now = datetime.datetime.now()
+    today = str(datetime.date.today())
+    year = str(dt_now.year)
+    next_month = "01"
+    if dt_now.month == 12:
+        year = str(dt_now.year + 1)
+        #date2 = next_year + "-01-" + "15"
+    else:
+        if dt_now.month < 9 :
+            next_month = "0" + str(dt_now.month + 1)
+        else:
+            next_month = str(dt_now.month + 1)
+        
+    url1 = "https://sneakerbunko.jp/product/" + today[0:4] + "/" + today[5:7]
+    url2 = "https://sneakerbunko.jp/product/" + year + "/" + next_month
+    
+    time.sleep(5)
+    r1 = requests.get(url1)
+    time.sleep(5)
+    r2 = requests.get(url2)
+    
+    soup1 = BeautifulSoup(r1.content, "html.parser")
+    soup2 = BeautifulSoup(r2.content, "html.parser")
+    
+    elms1 = soup1.select(".c-thumbnail-book__title > a")
+    elms2 = soup2.select(".c-thumbnail-book__title > a")
+    
+    #今月の発売日
+    date1 = list(today)
+    date1[-2], date1[-1] = "0", "1"
+    date1 = "".join(date1)
+    
+    #来月の発売日
+    date2 = year + "-" + next_month + "-" + "01"     
+    
+    tag = "スニーカー"
+    
+    for i in range(len(elms1)):
+        cl1 = label(elms1[i].text, date1, tag)
+        all_list.append(cl1)
+    for i in range(len(elms2)):
+        cl2 = label(elms2[i].text, date2, tag)
+        all_list.append(cl2)
+        
+    return all_list
 
 def main():
     all_list = []
@@ -301,8 +347,8 @@ def main():
     #all_list = mf(all_list)
     #all_list = gagaga(all_list)
     #all_list = fantasia(all_list)
-    all_list = ga(all_list)
-    #all_list = sneaker(all_list)
+    #all_list = ga(all_list)
+    all_list = sneaker(all_list)
     
     
     #現在のデータベースの状況を取得。タイトルなども取得できる。
