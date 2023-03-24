@@ -295,8 +295,21 @@ def ga(all_list):
     return all_list
 
 def sneaker(all_list):
-    url1 = "https://ga.sbcr.jp/release/month_current/"
-    url2 = "https://ga.sbcr.jp/release/month_next/"
+    dt_now = datetime.datetime.now()
+    today = str(datetime.date.today())
+    year = str(dt_now.year)
+    next_month = "01"
+    if dt_now.month == 12:
+        year = str(dt_now.year + 1)
+        #date2 = next_year + "-01-" + "15"
+    else:
+        if dt_now.month < 9 :
+            next_month = "0" + str(dt_now.month + 1)
+        else:
+            next_month = str(dt_now.month + 1)
+        
+    url1 = "https://sneakerbunko.jp/product/" + today[0:4] + "/" + today[5:7]
+    url2 = "https://sneakerbunko.jp/product/" + year + "/" + next_month
     
     time.sleep(5)
     r1 = requests.get(url1)
@@ -306,30 +319,16 @@ def sneaker(all_list):
     soup1 = BeautifulSoup(r1.content, "html.parser")
     soup2 = BeautifulSoup(r2.content, "html.parser")
     
-    elms1 = soup1.select(".newBook_gaBunko_wrap .title_area > .title > a > span")
-    elms2 = soup2.select(".newBook_gaBunko_wrap .title_area > .title > a > span")
+    elms1 = soup1.select(".c-thumbnail-book__title > a")
+    elms2 = soup2.select(".c-thumbnail-book__title > a")
     
-    
-    date1 = list(str(datetime.date.today()))
-    date1[-2], date1[-1] = "1", "5"
+    #今月の発売日
+    date1 = list(today)
+    date1[-2], date1[-1] = "0", "1"
     date1 = "".join(date1)
     
-    d_today = list(str(datetime.date.today()))
-    date2 = ""    
-    dt_now = datetime.datetime.now()
-    if dt_now.month == 12:
-        next_year = str(dt_now.year + 1)
-        date2 = next_year + "-01-" + "15"
-    else:
-        next_month = ""
-        if dt_now.month < 9 :
-            next_month = "0" + str(dt_now.month + 1)
-        else:
-            next_month = str(dt_now.month + 1)
-        d_today[5], d_today[6] = next_month[0], next_month[1]
-        d_today[8], d_today[9] = "1", "5"
-        date2 =  "".join(d_today)
-    
+    #来月の発売日
+    date2 = year + "-" + next_month + "-" + "01"     
     
     tag = "スニーカー"
     
