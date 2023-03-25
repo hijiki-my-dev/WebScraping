@@ -3,14 +3,19 @@ import json
 import requests
 import re
 import time
+import datetime
 
 import main_local
 
 
 def main():
+    #この日付より前のメモを消すことにする。
+    today = datetime.date.today()
+    two_month_ago = today - datetime.timedelta(days=60)
+    delete_limit_date = str(two_month_ago)
+            
     #まずは条件に合致する（この場合は古い情報）要素だけをNotionのDBから抜き出す。
     notion_url_db = main_local.notionurldb
-    #current_db = get_current(notion_url_db)
     
     api_key = main_local.api_key
     databaseid = main_local.databaseid
@@ -26,24 +31,11 @@ def main():
     #抜き出す情報のフィルターをかける
     payload = {
         "filter": {
-                "property": "作成日時",
-                    "date": {
-                        "equals": "2023-03-25"
-                    }
-                #"property": "追ってる",
-                #    "checkbox": {
-                #        "equals": False
-                #    },
-        },
-    }
-    
-    payload1 = {
-        "filter": {
             "and": [
                 {
                     "property": "作成日時",
                     "date": {
-                        "equals": "2023-03-25"
+                        "before": delete_limit_date
                     }
                 },
                 {
@@ -56,27 +48,12 @@ def main():
         }
     }
 
-    response = requests.request('POST', url=notion_url_db, json = payload1, headers=headers)
-    
-    
-    #ここは内容を出力するためだけ。後で消す
-    f = open('Tests/notiondb.txt', 'w')
-    f.write(response.text)
-    f.close()
-    #print(response.text)
-    #ここまで内容の出力
+    response = requests.request('POST', url=notion_url_db, json = payload, headers=headers)
     
     #これで作成日が古すぎる項目のページIDを取得できる。
     result = re.findall(r'"page","id":"(.*?)"', response.text)
-    f = open('Tests/notiondb2.txt', 'w')
-    for i in result:
-        f.write(i)
-        f.write("\n")
-    f.close()
-    #print(result)
     
-    
-    
+    #NotionAPIで、ページを削除するJSON
     payload_del = {
         "archived": True
     }
@@ -85,7 +62,6 @@ def main():
         time.sleep(0.5)
         notion_url_page = "https://api.notion.com/v1/pages/" + page_id
         response = requests.request('PATCH', url=notion_url_page, json = payload_del, headers=headers)
-    
     
     
 if __name__ == "__main__":
