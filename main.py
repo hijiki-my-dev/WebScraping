@@ -10,6 +10,7 @@ import re
 #import module
 import main_local
 import book_list
+import remove
 
 class label:
     def __init__(self, title_name, date_caractor, tag_name):
@@ -416,4 +417,6 @@ def main():
                 
     
 if __name__ == "__main__":
+    remove.main()
+    time.sleep(10)
     main()
