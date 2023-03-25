@@ -7,12 +7,9 @@ import json
 import datetime
 import re
 
-
 #import module
 import main_local
 import book_list
-
-
 
 class label:
     def __init__(self, title_name, date_caractor, tag_name):
@@ -329,7 +326,6 @@ def ga(all_list):
         d_today[8], d_today[9] = "1", "5"
         date2 =  "".join(d_today)
     
-    
     tag = "GA"
     
     for i in range(len(elms1)):
@@ -397,7 +393,6 @@ def main():
     all_list = ga(all_list)
     all_list = sneaker(all_list)
     
-    
     #現在のデータベースの状況を取得。タイトルなども取得できる。
     notion_url_db = main_local.notionurldb
     current_db = get_current(notion_url_db)
@@ -418,14 +413,7 @@ def main():
             if check_flag == 0:
                 time.sleep(0.5)
                 add_notion(all_list[i].title, all_list[i].tag, all_list[i].date)
-
-
-    
-    
+                
     
 if __name__ == "__main__":
-
-
-
-    
     main()
