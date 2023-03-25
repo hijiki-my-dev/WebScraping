@@ -29,7 +29,7 @@ def main():
                 "property": "作成日時",
                     "date": {
                         "equals": "2023-03-25"
-                    },
+                    }
                 #"property": "追ってる",
                 #    "checkbox": {
                 #        "equals": False
@@ -37,16 +37,33 @@ def main():
         },
     }
     
-    payload1 = {}
+    payload1 = {
+        "filter": {
+            "and": [
+                {
+                    "property": "作成日時",
+                    "date": {
+                        "equals": "2023-03-25"
+                    }
+                },
+                {
+                    "property": "追ってる",
+                    "checkbox": {
+                        "equals": False
+                        }
+                }
+            ]
+        }
+    }
 
-    response = requests.request('POST', url=notion_url_db, json = payload, headers=headers)
+    response = requests.request('POST', url=notion_url_db, json = payload1, headers=headers)
     
     
     #ここは内容を出力するためだけ。後で消す
     f = open('Tests/notiondb.txt', 'w')
     f.write(response.text)
     f.close()
-    print(response.text)
+    #print(response.text)
     #ここまで内容の出力
     
     #これで作成日が古すぎる項目のページIDを取得できる。
