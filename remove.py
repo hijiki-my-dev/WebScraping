@@ -2,6 +2,7 @@
 import json
 import requests
 import re
+import time
 
 import main_local
 
@@ -54,6 +55,17 @@ def main():
         f.write("\n")
     f.close()
     #print(result)
+    
+    
+    
+    payload_del = {
+        "archived": True
+    }
+    
+    for page_id in result:
+        #time.sleep(1)
+        notion_url_page = "https://api.notion.com/v1/pages/" + page_id
+        response = requests.request('PATCH', url=notion_url_page, json = payload_del, headers=headers)
     
     
     
