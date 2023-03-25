@@ -407,11 +407,17 @@ def main():
         if all_list[i].title in current_db:
             continue
         else:
+            check_flag = 0
             for book in book_list.l:
-                if book in all_list[i].title:    
+                if book in all_list[i].title:
+                    time.sleep(0.25)    
                     add_notion_checkbox(all_list[i].title, all_list[i].tag, all_list[i].date)
+                    check_flag = 1
                     break
-            add_notion(all_list[i].title, all_list[i].tag, all_list[i].date)
+                
+            if check_flag == 0:
+                time.sleep(0.25)
+                add_notion(all_list[i].title, all_list[i].tag, all_list[i].date)
 
 
     

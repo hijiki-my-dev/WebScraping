@@ -28,7 +28,7 @@ def main():
         "filter": {
                 "property": "作成日時",
                     "date": {
-                        "before": "2023-03-23"
+                        "equals": "2023-03-25"
                     },
                 #"property": "追ってる",
                 #    "checkbox": {
@@ -36,6 +36,8 @@ def main():
                 #    },
         },
     }
+    
+    payload1 = {}
 
     response = requests.request('POST', url=notion_url_db, json = payload, headers=headers)
     
@@ -63,7 +65,7 @@ def main():
     }
     
     for page_id in result:
-        #time.sleep(1)
+        time.sleep(0.25)
         notion_url_page = "https://api.notion.com/v1/pages/" + page_id
         response = requests.request('PATCH', url=notion_url_page, json = payload_del, headers=headers)
     
