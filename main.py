@@ -6,7 +6,7 @@ import time
 import json
 import datetime
 import re
-#from dateutil.relativedelta import relativedelta
+
 
 #import module
 import main_local
@@ -348,7 +348,7 @@ def sneaker(all_list):
     next_month = "01"
     if dt_now.month == 12:
         year = str(dt_now.year + 1)
-        #date2 = next_year + "-01-" + "15"
+
     else:
         if dt_now.month < 9 :
             next_month = "0" + str(dt_now.month + 1)
@@ -391,11 +391,11 @@ def sneaker(all_list):
 def main():
     all_list = []
     all_list = dengeki(all_list)
-    #all_list = mf(all_list)
-    #all_list = gagaga(all_list)
-    #all_list = fantasia(all_list)
-    #all_list = ga(all_list)
-    #all_list = sneaker(all_list)
+    all_list = mf(all_list)
+    all_list = gagaga(all_list)
+    all_list = fantasia(all_list)
+    all_list = ga(all_list)
+    all_list = sneaker(all_list)
     
     
     #現在のデータベースの状況を取得。タイトルなども取得できる。
@@ -410,13 +410,13 @@ def main():
             check_flag = 0
             for book in book_list.l:
                 if book in all_list[i].title:
-                    time.sleep(0.25)    
+                    time.sleep(0.5)    
                     add_notion_checkbox(all_list[i].title, all_list[i].tag, all_list[i].date)
                     check_flag = 1
                     break
                 
             if check_flag == 0:
-                time.sleep(0.25)
+                time.sleep(0.5)
                 add_notion(all_list[i].title, all_list[i].tag, all_list[i].date)
 
 
@@ -424,8 +424,8 @@ def main():
     
     
 if __name__ == "__main__":
-    #d_today = str(datetime.date.today())
 
-    #print(d_today)
+
+
     
     main()
