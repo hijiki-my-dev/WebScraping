@@ -10,6 +10,7 @@ from dateutil.relativedelta import relativedelta
 
 #import module
 import main_local
+import book_list
 
 
 
@@ -148,6 +149,9 @@ def add_notion_checkbox(title, tag, date):
                 "date": {
                     "start": date
                 }
+            },
+            "追ってる":{
+                "checkbox": True
             },
         }
     }
@@ -386,12 +390,12 @@ def sneaker(all_list):
 
 def main():
     all_list = []
-    #all_list = dengeki(all_list)
+    all_list = dengeki(all_list)
     #all_list = mf(all_list)
     #all_list = gagaga(all_list)
     #all_list = fantasia(all_list)
     #all_list = ga(all_list)
-    all_list = sneaker(all_list)
+    #all_list = sneaker(all_list)
     
     
     #現在のデータベースの状況を取得。タイトルなども取得できる。
@@ -403,6 +407,10 @@ def main():
         if all_list[i].title in current_db:
             continue
         else:
+            for book in book_list.l:
+                if book in all_list[i].title:    
+                    add_notion_checkbox(all_list[i].title, all_list[i].tag, all_list[i].date)
+                    break
             add_notion(all_list[i].title, all_list[i].tag, all_list[i].date)
 
 
