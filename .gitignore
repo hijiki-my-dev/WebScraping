@@ -1,8 +1,7 @@
 .vscode/
 main_local.py
-test.py
-test2.py
-test.ipynb
+Tests/
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

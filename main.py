@@ -6,12 +6,10 @@ import time
 import json
 import datetime
 import re
-from dateutil.relativedelta import relativedelta
 
 #import module
 import main_local
-
-
+import book_list
 
 class label:
     def __init__(self, title_name, date_caractor, tag_name):
@@ -110,6 +108,52 @@ def add_notion(title, tag, date):
 
     response = requests.post(notion_url, json=payload, headers=headers)
     
+def add_notion_checkbox(title, tag, date):
+    notion_url = 'https://api.notion.com/v1/pages'
+
+    api_key = main_local.api_key
+    databaseid = main_local.databaseid
+    
+    headers = {
+        "Accept": "application/json",
+        "Notion-Version": "2022-06-28",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + api_key
+    }
+
+    payload = {
+        "parent": {
+            "database_id": databaseid
+        },
+        "properties": {
+            "名前": {
+                "title": [
+                    {
+                        "text": {
+                            "content": title
+                        }
+                    }
+                ],
+            },
+            "レーベル": {
+                "multi_select": [
+                    {
+                        "name": tag
+                    }
+                ],
+            },
+            "発売日": {
+                "date": {
+                    "start": date
+                }
+            },
+            "追ってる":{
+                "checkbox": True
+            },
+        }
+    }
+
+    response = requests.post(notion_url, json=payload, headers=headers)
     
 #スクレイピングの部分
 def dengeki(all_list):
@@ -282,7 +326,6 @@ def ga(all_list):
         d_today[8], d_today[9] = "1", "5"
         date2 =  "".join(d_today)
     
-    
     tag = "GA"
     
     for i in range(len(elms1)):
@@ -301,7 +344,7 @@ def sneaker(all_list):
     next_month = "01"
     if dt_now.month == 12:
         year = str(dt_now.year + 1)
-        #date2 = next_year + "-01-" + "15"
+
     else:
         if dt_now.month < 9 :
             next_month = "0" + str(dt_now.month + 1)
@@ -343,13 +386,12 @@ def sneaker(all_list):
 
 def main():
     all_list = []
-    #all_list = dengeki(all_list)
-    #all_list = mf(all_list)
-    #all_list = gagaga(all_list)
-    #all_list = fantasia(all_list)
-    #all_list = ga(all_list)
+    all_list = dengeki(all_list)
+    all_list = mf(all_list)
+    all_list = gagaga(all_list)
+    all_list = fantasia(all_list)
+    all_list = ga(all_list)
     all_list = sneaker(all_list)
-    
     
     #現在のデータベースの状況を取得。タイトルなども取得できる。
     notion_url_db = main_local.notionurldb
@@ -360,15 +402,18 @@ def main():
         if all_list[i].title in current_db:
             continue
         else:
-            add_notion(all_list[i].title, all_list[i].tag, all_list[i].date)
-
-
-    
-    
+            check_flag = 0
+            for book in book_list.l:
+                if book in all_list[i].title:
+                    time.sleep(0.5)    
+                    add_notion_checkbox(all_list[i].title, all_list[i].tag, all_list[i].date)
+                    check_flag = 1
+                    break
+                
+            if check_flag == 0:
+                time.sleep(0.5)
+                add_notion(all_list[i].title, all_list[i].tag, all_list[i].date)
+                
     
 if __name__ == "__main__":
-    #d_today = str(datetime.date.today())
-
-    #print(d_today)
-    
     main()
