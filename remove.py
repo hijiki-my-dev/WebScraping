@@ -82,7 +82,7 @@ def main():
     }
     
     for page_id in result:
-        time.sleep(0.25)
+        time.sleep(0.5)
         notion_url_page = "https://api.notion.com/v1/pages/" + page_id
         response = requests.request('PATCH', url=notion_url_page, json = payload_del, headers=headers)
     
