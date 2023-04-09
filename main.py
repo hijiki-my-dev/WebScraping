@@ -18,6 +18,12 @@ class label:
         self.date = date_caractor
         self.tag = tag_name
 
+#デバッグ用の関数。引数に文字列を指定するとTestsディレクトリ（ローカルのみ）内にファイルを作成。
+def debug_file(s):
+    path = 'Tests/output.txt'
+    with open(path, mode='w') as f:
+        f.write(s)
+
 #引数はint
 def set_date(sale_day):
     dt_now = datetime.datetime.now()
@@ -51,7 +57,6 @@ def set_date(sale_day):
 #現在のデータベースに含まれるページ情報を取得して文字列を返す。        
 def get_current(url):
     api_key = main_local.api_key
-    databaseid = main_local.databaseid
 
     headers = {
         "Accept": "application/json",
@@ -59,10 +64,28 @@ def get_current(url):
         "Content-Type": "application/json",
         "Authorization": "Bearer " + api_key
     }
+    
+    params = {"page_size": 100} 
 
     response = requests.request('POST', url=url, headers=headers)
+    #最初100個のレスポンスを文字列として格納する。この後、ループで追加していく。
+    response_text = response.text
     
-    return response.text
+    if response.ok:
+        search_response_obj = response.json()		
+        pages_and_databases = search_response_obj.get("results")
+
+        while search_response_obj.get("has_more"):
+            params["start_cursor"] = search_response_obj.get("next_cursor")
+            
+            response = requests.post(url, json=params, headers=headers)
+            response_text += response.text
+            if response.ok:
+                search_response_obj = response.json()
+                pages_and_databases.extend(search_response_obj.get("results"))
+
+    
+    return response_text
 
 #指定された引数を元にNotionに追加する。        
 def add_notion(title, tag, date):
