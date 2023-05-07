@@ -9,7 +9,7 @@ import re
 
 #import module
 import main_local
-import book_list
+import booklist
 import remove
 
 class label:
@@ -427,7 +427,7 @@ def main():
             continue
         else:
             check_flag = 0
-            for book in book_list.l:
+            for book in booklist.l:
                 if book in all_list[i].title:
                     time.sleep(0.5)    
                     add_notion_checkbox(all_list[i].title, all_list[i].tag, all_list[i].date)
