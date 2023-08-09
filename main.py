@@ -226,7 +226,9 @@ def dengeki(all_list):
     #リクエストの前には必ずsleepを入れる。
     time.sleep(5)
     r = requests.get(url)
-    request_error_mail("電撃文庫", r.status_code)
+    if r.status_code != 200:
+        request_error_mail("電撃文庫", r.status_code)
+        return
 
     soup = BeautifulSoup(r.content, "html.parser")
     
@@ -267,6 +269,9 @@ def mf(all_list):
     
     time.sleep(5)
     r = requests.get(url)
+    if r.status_code != 200:
+        request_error_mail("MF文庫J", r.status_code)
+        return
     
     soup = BeautifulSoup(r.content, "html.parser")
     
@@ -303,6 +308,9 @@ def gagaga(all_list):
     
     time.sleep(5)
     r = requests.get(url)
+    if r.status_code != 200:
+        request_error_mail("ガガガ文庫", r.status_code)
+        return
     
     soup = BeautifulSoup(r.content, "html.parser")
     
@@ -323,6 +331,9 @@ def fantasia(all_list):
     
     time.sleep(5)
     r = requests.get(url)
+    if r.status_code != 200:
+        request_error_mail("ファンタジア文庫", r.status_code)
+        return
     
     soup = BeautifulSoup(r.content, "html.parser")
     
@@ -362,6 +373,9 @@ def ga(all_list):
     r1 = requests.get(url1)
     time.sleep(5)
     r2 = requests.get(url2)
+    if (r1.status_code != 200) or (r2.status_code != 200):
+        request_error_mail("GA文庫", r.status_code)
+        return
     
     soup1 = BeautifulSoup(r1.content, "html.parser")
     soup2 = BeautifulSoup(r2.content, "html.parser")
@@ -424,6 +438,9 @@ def sneaker(all_list):
     r1 = requests.get(url1)
     time.sleep(5)
     r2 = requests.get(url2)
+    if (r1.status_code != 200) or (r2.status_code != 200):
+        request_error_mail("スニーカー文庫", r.status_code)
+        return    
     
     soup1 = BeautifulSoup(r1.content, "html.parser")
     soup2 = BeautifulSoup(r2.content, "html.parser")

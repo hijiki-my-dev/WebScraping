@@ -30,4 +30,3 @@ def main(mess):
 
     server.quit()
     
-main("テスト")
