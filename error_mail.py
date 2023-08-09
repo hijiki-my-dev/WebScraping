@@ -6,7 +6,7 @@ from email.mime.text import MIMEText
 from email import policy
 import main_local
 
-def main(message):
+def main(mess):
     #SMTPサーバーに接続
     smtp_server = "smtp.gmail.com"
     port = 587
@@ -23,9 +23,11 @@ def main(message):
     message["Subject"] = "ラノベスクレイピングでのエラーの可能性"
     message["From"] = "スクレイピング"
     message["To"] = main_local.mail_address
-    text = MIMEText(message)
+    text = MIMEText(mess)
 
     message.attach(text)
     server.send_message(message)
 
     server.quit()
+    
+main("テスト")
