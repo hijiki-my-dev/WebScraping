@@ -30,34 +30,6 @@ def request_error_mail(error_point, status_code):
     message="スクレイピングプログラムの" + error_point + "でリクエスト時にエラーが発生した可能性があります。HTTPステータスコードは" + str(status_code) + "です。"
     error_mail.main(message)
 
-#引数はint
-#def set_date(sale_day):
-#    dt_now = datetime.datetime.now()
-#    date = ""
-#    today = dt_now.day
-#    
-#    sale_day_str = str(sale_day)
-#    
-#    #ISO形式（2023-03-22など）の一文字ずつをリストに格納
-#    d_today = list(str(datetime.date.today()))
-#    if today < sale_day:
-#        d_today[8], d_today[9] = sale_day_str[0], sale_day_str[1]
-#        date =  "".join(d_today)
-#    else:
-#        if dt_now.month == 12:
-#            next_year = str(dt_now.year + 1)
-#            date = next_year + "-01-" + sale_day_str
-#        else:
-#            next_month = ""
-#            if dt_now.month < 9 :
-#                next_month = "0" + str(dt_now.month + 1)
-#            else:
-#                next_month = str(dt_now.month + 1)
-#            d_today[5], d_today[6] = next_month[0], next_month[1]
-#            d_today[8], d_today[9] = sale_day_str[0], sale_day_str[1]
-#            date =  "".join(d_today)
-#    
-#    return date
 
 #ガガガ文庫用。"8月刊は8月18日発売予定"の形式で文字列を受け取って、2023-08-18などを返す。
 def set_date_gagaga(date_origin):
@@ -316,7 +288,6 @@ def gagaga(all_list):
     
     elms = soup.select(".content > #title > h3")
     tag = "ガガガ"
-    #date = set_date(18)
     
     date_origin = soup.select(".heading > .headingReleasedate")
     date = set_date_gagaga(date_origin[0].text)
