@@ -25,34 +25,63 @@ def debug_file(s):
         f.write(s)
 
 #引数はint
-def set_date(sale_day):
+#def set_date(sale_day):
+#    dt_now = datetime.datetime.now()
+#    date = ""
+#    today = dt_now.day
+#    
+#    sale_day_str = str(sale_day)
+#    
+#    #ISO形式（2023-03-22など）の一文字ずつをリストに格納
+#    d_today = list(str(datetime.date.today()))
+#    if today < sale_day:
+#        d_today[8], d_today[9] = sale_day_str[0], sale_day_str[1]
+#        date =  "".join(d_today)
+#    else:
+#        if dt_now.month == 12:
+#            next_year = str(dt_now.year + 1)
+#            date = next_year + "-01-" + sale_day_str
+#        else:
+#            next_month = ""
+#            if dt_now.month < 9 :
+#                next_month = "0" + str(dt_now.month + 1)
+#            else:
+#                next_month = str(dt_now.month + 1)
+#            d_today[5], d_today[6] = next_month[0], next_month[1]
+#            d_today[8], d_today[9] = sale_day_str[0], sale_day_str[1]
+#            date =  "".join(d_today)
+#    
+#    return date
+
+#ガガガ文庫用。"8月刊は8月18日発売予定"の形式で文字列を受け取って、2023-08-18などを返す。
+def set_date_gagaga(date_origin):
+    d_list = list(date_origin)
+    del d_list[0:4]
+    if d_list[1] == "月":
+        d_list.insert(0, "0")
+    
+    #1月に発売する時は来年になる可能性があることに注意して、発売する年を最初につける。
+    #発売する月、今の年月を取得
     dt_now = datetime.datetime.now()
-    date = ""
-    today = dt_now.day
+    dt_year = dt_now.year
     
-    sale_day_str = str(sale_day)
+    #1月発売の場合、今12月なら発売日は来年
+    if d_list[0]=="0" & d_list[1]=="1":
+        dt_month = dt_now.month
+        if dt_month == 12:
+            dt_year += 1
+
+    #["y", "y", "y", "y", "-"]の形式のリストを作成
+    d_list_year = list(str(dt_year) + "-")
+    d_list = d_list_year.extend(d_list)
     
-    #ISO形式（2023-03-22など）の一文字ずつをリストに格納
-    d_today = list(str(datetime.date.today()))
-    if today < sale_day:
-        d_today[8], d_today[9] = sale_day_str[0], sale_day_str[1]
-        date =  "".join(d_today)
-    else:
-        if dt_now.month == 12:
-            next_year = str(dt_now.year + 1)
-            date = next_year + "-01-" + sale_day_str
-        else:
-            next_month = ""
-            if dt_now.month < 9 :
-                next_month = "0" + str(dt_now.month + 1)
-            else:
-                next_month = str(dt_now.month + 1)
-            d_today[5], d_today[6] = next_month[0], next_month[1]
-            d_today[8], d_today[9] = sale_day_str[0], sale_day_str[1]
-            date =  "".join(d_today)
+    #yyyy-mm-ddの形式の文字列にする。
+    d = ''.join(d_list)
+    d = d.replace("月", "-")
+    d = d.replace("日発売予定", "")
     
-    return date
-    
+    return d
+            
         
 #現在のデータベースに含まれるページ情報を取得して文字列を返す。        
 def get_current(url):
@@ -131,7 +160,8 @@ def add_notion(title, tag, date):
     }
 
     response = requests.post(notion_url, json=payload, headers=headers)
-    
+
+#追っている作品or興味のある作品にはチェックをつける
 def add_notion_checkbox(title, tag, date):
     notion_url = 'https://api.notion.com/v1/pages'
 
@@ -269,7 +299,10 @@ def gagaga(all_list):
     
     elms = soup.select(".content > #title > h3")
     tag = "ガガガ"
-    date = set_date(18)
+    #date = set_date(18)
+    
+    date_origin = soup.select(".heading > .headingReleasedate")
+    date = set_date_gagaga(date_origin.text)
     
     for i in range(len(elms)):
         cl = label(elms[i].text, date, tag)
