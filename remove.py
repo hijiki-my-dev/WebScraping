@@ -14,7 +14,7 @@ def main():
     three_month_ago = today - datetime.timedelta(days=90)
     delete_limit_date = str(three_month_ago)
     
-    delete_limit_date = "2023-06-12"
+    #delete_limit_date = "2023-06-12"
             
     #まずは条件に合致する（この場合は古い情報）要素だけをNotionのDBから抜き出す。
     notion_url_db = main_local.notionurldb

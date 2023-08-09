@@ -470,6 +470,6 @@ def main():
                 
     
 if __name__ == "__main__":
-    #remove.main()
+    remove.main()
     time.sleep(10)
-    main()
+    #main()
