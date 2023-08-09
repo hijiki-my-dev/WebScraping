@@ -66,17 +66,19 @@ def set_date_gagaga(date_origin):
     dt_year = dt_now.year
     
     #1月発売の場合、今12月なら発売日は来年
-    if d_list[0]=="0" & d_list[1]=="1":
+    if (d_list[0]=="0") & (d_list[1]=="1"):
         dt_month = dt_now.month
         if dt_month == 12:
             dt_year += 1
 
     #["y", "y", "y", "y", "-"]の形式のリストを作成
     d_list_year = list(str(dt_year) + "-")
-    d_list = d_list_year.extend(d_list)
+    print(d_list_year, d_list)
+    d_list_year.extend(d_list)
+    print(d_list_year)
     
     #yyyy-mm-ddの形式の文字列にする。
-    d = ''.join(d_list)
+    d = ''.join(d_list_year)
     d = d.replace("月", "-")
     d = d.replace("日発売予定", "")
     
@@ -302,7 +304,7 @@ def gagaga(all_list):
     #date = set_date(18)
     
     date_origin = soup.select(".heading > .headingReleasedate")
-    date = set_date_gagaga(date_origin.text)
+    date = set_date_gagaga(date_origin[0].text)
     
     for i in range(len(elms)):
         cl = label(elms[i].text, date, tag)
@@ -443,12 +445,12 @@ def sneaker(all_list):
 
 def main():
     all_list = []
-    all_list = dengeki(all_list)
-    all_list = mf(all_list)
+    #all_list = dengeki(all_list)
+    #all_list = mf(all_list)
     all_list = gagaga(all_list)
-    all_list = fantasia(all_list)
-    all_list = ga(all_list)
-    all_list = sneaker(all_list)
+    #all_list = fantasia(all_list)
+    #all_list = ga(all_list)
+    #all_list = sneaker(all_list)
     
     #現在のデータベースの状況を取得。タイトルなども取得できる。
     notion_url_db = main_local.notionurldb
@@ -473,6 +475,6 @@ def main():
                 
     
 if __name__ == "__main__":
-    remove.main()
+    #remove.main()
     time.sleep(10)
     main()
