@@ -441,11 +441,11 @@ def sneaker(all_list):
 def main():
     all_list = []
     all_list = dengeki(all_list)
-    #all_list = mf(all_list)
-    #all_list = gagaga(all_list)
-    #all_list = fantasia(all_list)
-    #all_list = ga(all_list)
-    #all_list = sneaker(all_list)
+    all_list = mf(all_list)
+    all_list = gagaga(all_list)
+    all_list = fantasia(all_list)
+    all_list = ga(all_list)
+    all_list = sneaker(all_list)
     
     #現在のデータベースの状況を取得。タイトルなども取得できる。
     notion_url_db = main_local.notionurldb
@@ -472,4 +472,4 @@ def main():
 if __name__ == "__main__":
     remove.main()
     time.sleep(10)
-    #main()
+    main()
