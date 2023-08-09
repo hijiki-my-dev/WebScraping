@@ -11,6 +11,7 @@ import re
 import main_local
 import booklist
 import remove
+import error_mail
 
 class label:
     def __init__(self, title_name, date_caractor, tag_name):
@@ -23,36 +24,44 @@ def debug_file(s):
     path = 'Tests/output.txt'
     with open(path, mode='w') as f:
         f.write(s)
+        
+#リクエストエラーが発生した際にメールを送る
+def request_error_mail(error_point, status_code):
+    message="スクレイピングプログラムの" + error_point + "でリクエスト時にエラーが発生した可能性があります。HTTPステータスコードは" + str(status_code) + "です。"
+    error_mail.main(message)
 
-#引数はint
-def set_date(sale_day):
+
+#ガガガ文庫用。"8月刊は8月18日発売予定"の形式で文字列を受け取って、2023-08-18などを返す。
+def set_date_gagaga(date_origin):
+    d_list = list(date_origin)
+    del d_list[0:4]
+    if d_list[1] == "月":
+        d_list.insert(0, "0")
+    
+    #1月に発売する時は来年になる可能性があることに注意して、発売する年を最初につける。
+    #発売する月、今の年月を取得
     dt_now = datetime.datetime.now()
-    date = ""
-    today = dt_now.day
+    dt_year = dt_now.year
     
-    sale_day_str = str(sale_day)
+    #1月発売の場合、今12月なら発売日は来年
+    if (d_list[0]=="0") & (d_list[1]=="1"):
+        dt_month = dt_now.month
+        if dt_month == 12:
+            dt_year += 1
+
+    #["y", "y", "y", "y", "-"]の形式のリストを作成
+    d_list_year = list(str(dt_year) + "-")
+    print(d_list_year, d_list)
+    d_list_year.extend(d_list)
+    print(d_list_year)
     
-    #ISO形式（2023-03-22など）の一文字ずつをリストに格納
-    d_today = list(str(datetime.date.today()))
-    if today < sale_day:
-        d_today[8], d_today[9] = sale_day_str[0], sale_day_str[1]
-        date =  "".join(d_today)
-    else:
-        if dt_now.month == 12:
-            next_year = str(dt_now.year + 1)
-            date = next_year + "-01-" + sale_day_str
-        else:
-            next_month = ""
-            if dt_now.month < 9 :
-                next_month = "0" + str(dt_now.month + 1)
-            else:
-                next_month = str(dt_now.month + 1)
-            d_today[5], d_today[6] = next_month[0], next_month[1]
-            d_today[8], d_today[9] = sale_day_str[0], sale_day_str[1]
-            date =  "".join(d_today)
+    #yyyy-mm-ddの形式の文字列にする。
+    d = ''.join(d_list_year)
+    d = d.replace("月", "-")
+    d = d.replace("日発売予定", "")
     
-    return date
-    
+    return d
+            
         
 #現在のデータベースに含まれるページ情報を取得して文字列を返す。        
 def get_current(url):
@@ -131,7 +140,8 @@ def add_notion(title, tag, date):
     }
 
     response = requests.post(notion_url, json=payload, headers=headers)
-    
+
+#追っている作品or興味のある作品にはチェックをつける
 def add_notion_checkbox(title, tag, date):
     notion_url = 'https://api.notion.com/v1/pages'
 
@@ -188,6 +198,9 @@ def dengeki(all_list):
     #リクエストの前には必ずsleepを入れる。
     time.sleep(5)
     r = requests.get(url)
+    if r.status_code != 200:
+        request_error_mail("電撃文庫", r.status_code)
+        return
 
     soup = BeautifulSoup(r.content, "html.parser")
     
@@ -228,6 +241,9 @@ def mf(all_list):
     
     time.sleep(5)
     r = requests.get(url)
+    if r.status_code != 200:
+        request_error_mail("MF文庫J", r.status_code)
+        return
     
     soup = BeautifulSoup(r.content, "html.parser")
     
@@ -264,12 +280,17 @@ def gagaga(all_list):
     
     time.sleep(5)
     r = requests.get(url)
+    if r.status_code != 200:
+        request_error_mail("ガガガ文庫", r.status_code)
+        return
     
     soup = BeautifulSoup(r.content, "html.parser")
     
     elms = soup.select(".content > #title > h3")
     tag = "ガガガ"
-    date = set_date(18)
+    
+    date_origin = soup.select(".heading > .headingReleasedate")
+    date = set_date_gagaga(date_origin[0].text)
     
     for i in range(len(elms)):
         cl = label(elms[i].text, date, tag)
@@ -281,6 +302,9 @@ def fantasia(all_list):
     
     time.sleep(5)
     r = requests.get(url)
+    if r.status_code != 200:
+        request_error_mail("ファンタジア文庫", r.status_code)
+        return
     
     soup = BeautifulSoup(r.content, "html.parser")
     
@@ -320,6 +344,9 @@ def ga(all_list):
     r1 = requests.get(url1)
     time.sleep(5)
     r2 = requests.get(url2)
+    if (r1.status_code != 200) or (r2.status_code != 200):
+        request_error_mail("GA文庫", r.status_code)
+        return
     
     soup1 = BeautifulSoup(r1.content, "html.parser")
     soup2 = BeautifulSoup(r2.content, "html.parser")
@@ -382,6 +409,9 @@ def sneaker(all_list):
     r1 = requests.get(url1)
     time.sleep(5)
     r2 = requests.get(url2)
+    if (r1.status_code != 200) or (r2.status_code != 200):
+        request_error_mail("スニーカー文庫", r.status_code)
+        return    
     
     soup1 = BeautifulSoup(r1.content, "html.parser")
     soup2 = BeautifulSoup(r2.content, "html.parser")

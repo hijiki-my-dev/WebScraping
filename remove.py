@@ -11,10 +11,10 @@ import main_local
 def main():
     #この日付より前のメモを消すことにする。
     today = datetime.date.today()
-    two_month_ago = today - datetime.timedelta(days=60)
-    delete_limit_date = str(two_month_ago)
+    three_month_ago = today - datetime.timedelta(days=90)
+    delete_limit_date = str(three_month_ago)
     
-    delete_limit_date = "2023-03-26"
+    #delete_limit_date = "2023-06-12"
             
     #まずは条件に合致する（この場合は古い情報）要素だけをNotionのDBから抜き出す。
     notion_url_db = main_local.notionurldb
@@ -61,6 +61,8 @@ def main():
     }
     
     for page_id in result:
-        time.sleep(0.5)
+        time.sleep(0.8)
         notion_url_page = "https://api.notion.com/v1/pages/" + page_id
         response = requests.request('PATCH', url=notion_url_page, json = payload_del, headers=headers)
+        
+#main()
