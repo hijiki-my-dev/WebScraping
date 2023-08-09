@@ -11,6 +11,7 @@ import re
 import main_local
 import booklist
 import remove
+import error_mail
 
 class label:
     def __init__(self, title_name, date_caractor, tag_name):
@@ -23,6 +24,11 @@ def debug_file(s):
     path = 'Tests/output.txt'
     with open(path, mode='w') as f:
         f.write(s)
+        
+#リクエストエラーが発生した際にメールを送る
+def request_error_mail(error_point, status_code):
+    message="スクレイピングプログラムの" + error_point + "でリクエスト時にエラーが発生した可能性があります。HTTPステータスコードは" + str(status_code) + "です。"
+    error_mail.main(message)
 
 #引数はint
 #def set_date(sale_day):
@@ -220,6 +226,7 @@ def dengeki(all_list):
     #リクエストの前には必ずsleepを入れる。
     time.sleep(5)
     r = requests.get(url)
+    request_error_mail("電撃文庫", r.status_code)
 
     soup = BeautifulSoup(r.content, "html.parser")
     
@@ -446,11 +453,11 @@ def sneaker(all_list):
 def main():
     all_list = []
     all_list = dengeki(all_list)
-    all_list = mf(all_list)
-    all_list = gagaga(all_list)
-    all_list = fantasia(all_list)
-    all_list = ga(all_list)
-    all_list = sneaker(all_list)
+    #all_list = mf(all_list)
+    #all_list = gagaga(all_list)
+    #all_list = fantasia(all_list)
+    #all_list = ga(all_list)
+    #all_list = sneaker(all_list)
     
     #現在のデータベースの状況を取得。タイトルなども取得できる。
     notion_url_db = main_local.notionurldb
@@ -475,6 +482,6 @@ def main():
                 
     
 if __name__ == "__main__":
-    remove.main()
+    #remove.main()
     time.sleep(10)
-    #main()
+    main()
