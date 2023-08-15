@@ -51,9 +51,7 @@ def set_date_gagaga(date_origin):
 
     #["y", "y", "y", "y", "-"]の形式のリストを作成
     d_list_year = list(str(dt_year) + "-")
-    print(d_list_year, d_list)
     d_list_year.extend(d_list)
-    print(d_list_year)
     
     #yyyy-mm-ddの形式の文字列にする。
     d = ''.join(d_list_year)
