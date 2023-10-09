@@ -195,7 +195,7 @@ def dengeki(all_list):
 
     #リクエストの前には必ずsleepを入れる。
     time.sleep(5)
-    r = requests.get(url)
+    r = requests.get(url, verify=False)
     if r.status_code != 200:
         request_error_mail("電撃文庫", r.status_code)
         return
@@ -439,11 +439,11 @@ def sneaker(all_list):
 def main():
     all_list = []
     all_list = dengeki(all_list)
-    all_list = mf(all_list)
-    all_list = gagaga(all_list)
-    all_list = fantasia(all_list)
-    all_list = ga(all_list)
-    all_list = sneaker(all_list)
+    #all_list = mf(all_list)
+    #all_list = gagaga(all_list)
+    #all_list = fantasia(all_list)
+    #all_list = ga(all_list)
+    #all_list = sneaker(all_list)
     
     #現在のデータベースの状況を取得。タイトルなども取得できる。
     notion_url_db = main_local.notionurldb
