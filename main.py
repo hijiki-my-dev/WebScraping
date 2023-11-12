@@ -83,6 +83,7 @@ def get_current(url):
 
     params = {"page_size": 100}
 
+    time.sleep(1)
     response = requests.request("POST", url=url, headers=headers)
     # 最初100個のレスポンスを文字列として格納する。この後、ループで追加していく。
     response_text = response.text
@@ -94,6 +95,7 @@ def get_current(url):
         while search_response_obj.get("has_more"):
             params["start_cursor"] = search_response_obj.get("next_cursor")
 
+            time.sleep(1)
             response = requests.post(url, json=params, headers=headers)
             response_text += response.text
             if response.ok:
@@ -171,7 +173,7 @@ def dengeki(all_list):
     url = "https://dengekibunko.jp/product/newrelease-bunko.html"
 
     # リクエストの前には必ずsleepを入れる。
-    time.sleep(5)
+    time.sleep(1)
     r = requests.get(url)
     if r.status_code != 200:
         request_error_mail("電撃文庫", r.status_code)
@@ -215,7 +217,7 @@ def dengeki(all_list):
 def mf(all_list):
     url = "https://mfbunkoj.jp/product/new-release.html"
 
-    time.sleep(5)
+    time.sleep(1)
     r = requests.get(url)
     if r.status_code != 200:
         request_error_mail("MF文庫J", r.status_code)
@@ -255,7 +257,7 @@ def mf(all_list):
 def gagaga(all_list):
     url = "https://gagagabunko.jp/release/index.html"
 
-    time.sleep(5)
+    time.sleep(1)
     r = requests.get(url)
     if r.status_code != 200:
         request_error_mail("ガガガ文庫", r.status_code)
@@ -278,7 +280,7 @@ def gagaga(all_list):
 def fantasia(all_list):
     url = "https://fantasiabunko.jp/product/"
 
-    time.sleep(5)
+    time.sleep(1)
     r = requests.get(url)
     if r.status_code != 200:
         request_error_mail("ファンタジア文庫", r.status_code)
@@ -319,12 +321,13 @@ def ga(all_list):
     url1 = "https://ga.sbcr.jp/release/month_current/"
     url2 = "https://ga.sbcr.jp/release/month_next/"
 
-    time.sleep(5)
+    time.sleep(1)
     r1 = requests.get(url1)
-    time.sleep(5)
+    time.sleep(1)
     r2 = requests.get(url2)
     if (r1.status_code != 200) or (r2.status_code != 200):
-        request_error_mail("GA文庫", r.status_code)
+        request_error_mail("GA文庫", r1.status_code)
+        request_error_mail("GA文庫", r2.status_code)
         return
 
     soup1 = BeautifulSoup(r1.content, "html.parser")
@@ -385,12 +388,13 @@ def sneaker(all_list):
     url1 = "https://sneakerbunko.jp/product/" + today[0:4] + "/" + today[5:7]
     url2 = "https://sneakerbunko.jp/product/" + year + "/" + next_month
 
-    time.sleep(5)
+    time.sleep(1)
     r1 = requests.get(url1)
-    time.sleep(5)
+    time.sleep(1)
     r2 = requests.get(url2)
     if (r1.status_code != 200) or (r2.status_code != 200):
-        request_error_mail("スニーカー文庫", r.status_code)
+        request_error_mail("スニーカー文庫", r1.status_code)
+        request_error_mail("スニーカー文庫", r2.status_code)
         return
 
     soup1 = BeautifulSoup(r1.content, "html.parser")
