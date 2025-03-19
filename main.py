@@ -185,7 +185,7 @@ def dengeki(all_list):
     tag = "電撃"
 
     # dateをISO8601に合わせる。まずは発売日の文字列をfind_allしてくる。
-    date_elms = soup.find_all("td", text=re.compile("日発売"))
+    date_elms = soup.find_all("td", string=re.compile("日発売"))
     date_iso_list = []
     for elm in date_elms:
         d = elm.text
@@ -228,7 +228,7 @@ def mf(all_list):
     elms = soup.select(".detail > h2 > a")
     tag = "MF"
 
-    date_elms = soup.find_all("p", text=re.compile("発売日"))
+    date_elms = soup.find_all("p", string=re.compile("発売日"))
     date_iso_list = []
     for elm in date_elms:
         d = elm.text
@@ -291,7 +291,7 @@ def fantasia(all_list):
     elms = soup.select(".detail > .head > h3 > a")
     tag = "ファンタジア"
 
-    date_elms = soup.find_all("p", text=re.compile("発売日"))
+    date_elms = soup.find_all("p", string=re.compile("発売日"))
     date_iso_list = []
     for elm in date_elms:
         d = elm.text
