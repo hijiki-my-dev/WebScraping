@@ -6,6 +6,8 @@ import time
 import json
 import datetime
 import re
+import os
+from dataclasses import dataclass
 
 # import module
 import main_local
@@ -14,11 +16,73 @@ import remove
 import error_mail
 
 
-class label:
-    def __init__(self, title_name, date_caractor, tag_name):
-        self.title = title_name
-        self.date = date_caractor
-        self.tag = tag_name
+# TODO: requestsエラーの検出やメール送信、デバッグなどをutilsにまとめる。クラス化はしなくても良さそう
+
+class NotionClient:
+    def __init__(self):
+        # self.notion_api_key = os.environ.get("NotionAPIKey")
+        # self.notion_database_id = os.environ.get("NotionDatabaseID")
+        self.notion_api_key = main_local.api_key
+        self.notion_database_id = main_local.databaseid
+        self.notion_url = f"https://api.notion.com/v1/databases/{self.notion_database_id}/query"
+
+        self.headers = {
+            "Notion-Version": "2022-06-28",
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + self.notion_api_key,
+        }
+
+    def get_current_pages(self) -> str:
+        params = {"page_size": 100}
+        time.sleep(1)
+        response = requests.request("POST", url=self.notion_url, headers=self.headers)
+
+        # 最初100個のレスポンスを文字列として格納する。この後、ループで追加していく。
+        response_text = response.text
+
+        if response.ok:
+            search_response_obj = response.json()
+            pages_and_databases = search_response_obj.get("results")
+
+            while search_response_obj.get("has_more"):
+                params["start_cursor"] = search_response_obj.get("next_cursor")
+                time.sleep(1)
+                response = requests.request("POST", url=self.notion_url, json=params, headers=self.headers)
+                response_text += response.text
+                if response.ok:
+                    search_response_obj = response.json()
+                    pages_and_databases.extend(search_response_obj.get("results"))
+
+        return response_text
+
+    def add_to_notion(self, title: str, tag: str, date: str, checkbox_flg: int = 0):
+        notion_url = "https://api.notion.com/v1/pages"
+
+        payload = {
+            "parent": {"database_id": self.notion_database_id},
+            "properties": {
+                "名前": {
+                    "title": [{"text": {"content": title}}],
+                },
+                "レーベル": {
+                    "multi_select": [{"name": tag}],
+                },
+                "発売日": {"date": {"start": date}},
+                "追ってる": {"checkbox": bool(checkbox_flg)},
+            },
+        }
+
+        response = requests.request("POST", url=notion_url, json=payload, headers=self.headers)
+        if response.status_code != 200:
+            # メールでエラー通知
+            pass
+
+
+@dataclass
+class book_info:
+    title: str
+    tag: str
+    date: str
 
 
 # デバッグ用の関数。引数に文字列を指定するとTestsディレクトリ（ローカルのみ）内にファイルを作成。
@@ -69,103 +133,6 @@ def set_date_gagaga(date_origin):
 
     return d
 
-
-# 現在のデータベースに含まれるページ情報を取得して文字列を返す。
-def get_current(url):
-    api_key = main_local.api_key
-
-    headers = {
-        "Accept": "application/json",
-        "Notion-Version": "2022-06-28",
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + api_key,
-    }
-
-    params = {"page_size": 100}
-
-    time.sleep(1)
-    response = requests.request("POST", url=url, headers=headers)
-    # 最初100個のレスポンスを文字列として格納する。この後、ループで追加していく。
-    response_text = response.text
-
-    if response.ok:
-        search_response_obj = response.json()
-        pages_and_databases = search_response_obj.get("results")
-
-        while search_response_obj.get("has_more"):
-            params["start_cursor"] = search_response_obj.get("next_cursor")
-
-            time.sleep(1)
-            response = requests.post(url, json=params, headers=headers)
-            response_text += response.text
-            if response.ok:
-                search_response_obj = response.json()
-                pages_and_databases.extend(search_response_obj.get("results"))
-
-    return response_text
-
-
-# 指定された引数を元にNotionに追加する。
-def add_notion(title, tag, date):
-    notion_url = "https://api.notion.com/v1/pages"
-
-    api_key = main_local.api_key
-    databaseid = main_local.databaseid
-
-    headers = {
-        "Accept": "application/json",
-        "Notion-Version": "2022-06-28",
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + api_key,
-    }
-
-    payload = {
-        "parent": {"database_id": databaseid},
-        "properties": {
-            "名前": {
-                "title": [{"text": {"content": title}}],
-            },
-            "レーベル": {
-                "multi_select": [{"name": tag}],
-            },
-            "発売日": {"date": {"start": date}},
-        },
-    }
-
-    response = requests.post(notion_url, json=payload, headers=headers)
-
-
-# 追っている作品or興味のある作品にはチェックをつける
-def add_notion_checkbox(title, tag, date):
-    notion_url = "https://api.notion.com/v1/pages"
-
-    api_key = main_local.api_key
-    databaseid = main_local.databaseid
-
-    headers = {
-        "Accept": "application/json",
-        "Notion-Version": "2022-06-28",
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + api_key,
-    }
-
-    payload = {
-        "parent": {"database_id": databaseid},
-        "properties": {
-            "名前": {
-                "title": [{"text": {"content": title}}],
-            },
-            "レーベル": {
-                "multi_select": [{"name": tag}],
-            },
-            "発売日": {"date": {"start": date}},
-            "追ってる": {"checkbox": True},
-        },
-    }
-
-    response = requests.post(notion_url, json=payload, headers=headers)
-
-
 # スクレイピングの部分
 def dengeki(all_list):
     # 電撃文庫の今月と来月発売の作品タイトルと発売日を抜粋
@@ -208,7 +175,7 @@ def dengeki(all_list):
 
     # 各作品のタイトルと発売日とレーベルを変数とするインスタンスのリストを生成。
     for i in range(len(elms)):
-        cl = label(elms[i].text, date_iso_list[i], tag)
+        cl = book_info(elms[i].text, tag, date_iso_list[i])
         all_list.append(cl)
 
     return all_list
@@ -248,7 +215,7 @@ def mf(all_list):
         date_iso_list.append(d)
 
     for i in range(len(elms)):
-        cl = label(elms[i].text, date_iso_list[i], tag)
+        cl = book_info(elms[i].text, tag, date_iso_list[i])
         all_list.append(cl)
 
     return all_list
@@ -272,7 +239,7 @@ def gagaga(all_list):
     date = set_date_gagaga(date_origin[0].text)
 
     for i in range(len(elms)):
-        cl = label(elms[i].text, date, tag)
+        cl = book_info(elms[i].text, tag, date)
         all_list.append(cl)
     return all_list
 
@@ -311,7 +278,7 @@ def fantasia(all_list):
         date_iso_list.append(d)
 
     for i in range(len(elms)):
-        cl = label(elms[i].text, date_iso_list[i], tag)
+        cl = book_info(elms[i].text, tag, date_iso_list[i])
         all_list.append(cl)
 
     return all_list
@@ -362,10 +329,10 @@ def ga(all_list):
     tag = "GA"
 
     for i in range(len(elms1)):
-        cl1 = label(elms1[i].text, date1, tag)
+        cl1 = book_info(elms1[i].text, tag, date1)
         all_list.append(cl1)
     for i in range(len(elms2)):
-        cl2 = label(elms2[i].text, date2, tag)
+        cl2 = book_info(elms2[i].text, tag, date2)
         all_list.append(cl2)
 
     return all_list
@@ -414,10 +381,10 @@ def sneaker(all_list):
     tag = "スニーカー"
 
     for i in range(len(elms1)):
-        cl1 = label(elms1[i].text, date1, tag)
+        cl1 = book_info(elms1[i].text, tag, date1)
         all_list.append(cl1)
     for i in range(len(elms2)):
-        cl2 = label(elms2[i].text, date2, tag)
+        cl2 = book_info(elms2[i].text, tag, date2)
         all_list.append(cl2)
 
     return all_list
@@ -426,37 +393,34 @@ def sneaker(all_list):
 def main():
     all_list = []
     all_list = dengeki(all_list)
-    all_list = mf(all_list)
-    all_list = gagaga(all_list)
-    all_list = fantasia(all_list)
-    all_list = ga(all_list)
-    all_list = sneaker(all_list)
+    # all_list = mf(all_list)
+    # all_list = gagaga(all_list)
+    # all_list = fantasia(all_list)
+    # all_list = ga(all_list)
+    # all_list = sneaker(all_list)
 
-    # 現在のデータベースの状況を取得。タイトルなども取得できる。
-    notion_url_db = main_local.notionurldb
-    current_db = get_current(notion_url_db)
+    # 現在のデータベース情報を取得
+    notion_client = NotionClient()
+    current_db = notion_client.get_current_pages()
+
+    # notion_url_db = main_local.notionurldb
+    # current_db = get_current(notion_url_db)
 
     for i in range(len(all_list)):
-        # 重複の除外
+        # 既存のデータベースに含まれている場合はスキップ
         if all_list[i].title in current_db:
             continue
         else:
             check_flag = 0
             for book in booklist.l:
                 if book in all_list[i].title:
-                    time.sleep(0.5)
-                    add_notion_checkbox(
-                        all_list[i].title, all_list[i].tag, all_list[i].date
-                    )
                     check_flag = 1
                     break
-
-            if check_flag == 0:
-                time.sleep(0.5)
-                add_notion(all_list[i].title, all_list[i].tag, all_list[i].date)
+            time.sleep(0.5)
+            notion_client.add_to_notion(all_list[i].title, all_list[i].tag, all_list[i].date, check_flag)
 
 
 if __name__ == "__main__":
-    remove.main()
-    time.sleep(10)
+    # remove.main()
+    # time.sleep(10)
     main()
