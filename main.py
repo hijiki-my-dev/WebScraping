@@ -8,12 +8,19 @@ import datetime
 import re
 import os
 from dataclasses import dataclass
+from logging import DEBUG, ERROR
 
 # import module
 import main_local
 import booklist
 import remove
 import error_mail
+from modules import Logger
+
+LOG_LEVEL = DEBUG
+
+logger = Logger(log_level=LOG_LEVEL)
+
 
 
 # TODO: requestsエラーの検出やメール送信、デバッグなどをutilsにまとめる。クラス化はしなくても良さそう
@@ -36,6 +43,8 @@ class NotionClient:
         params = {"page_size": 100}
         time.sleep(1)
         response = requests.request("POST", url=self.notion_url, headers=self.headers)
+
+        print(response.status_code)
 
         # 最初100個のレスポンスを文字列として格納する。この後、ループで追加していく。
         response_text = response.text
@@ -392,7 +401,7 @@ def sneaker(all_list):
 
 def main():
     all_list = []
-    all_list = dengeki(all_list)
+    # all_list = dengeki(all_list)
     # all_list = mf(all_list)
     # all_list = gagaga(all_list)
     # all_list = fantasia(all_list)
@@ -406,18 +415,18 @@ def main():
     # notion_url_db = main_local.notionurldb
     # current_db = get_current(notion_url_db)
 
-    for i in range(len(all_list)):
-        # 既存のデータベースに含まれている場合はスキップ
-        if all_list[i].title in current_db:
-            continue
-        else:
-            check_flag = 0
-            for book in booklist.l:
-                if book in all_list[i].title:
-                    check_flag = 1
-                    break
-            time.sleep(0.5)
-            notion_client.add_to_notion(all_list[i].title, all_list[i].tag, all_list[i].date, check_flag)
+    # for i in range(len(all_list)):
+    #     # 既存のデータベースに含まれている場合はスキップ
+    #     if all_list[i].title in current_db:
+    #         continue
+    #     else:
+    #         check_flag = 0
+    #         for book in booklist.l:
+    #             if book in all_list[i].title:
+    #                 check_flag = 1
+    #                 break
+    #         time.sleep(0.5)
+    #         notion_client.add_to_notion(all_list[i].title, all_list[i].tag, all_list[i].date, check_flag)
 
 
 if __name__ == "__main__":
