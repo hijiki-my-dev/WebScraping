@@ -13,8 +13,9 @@ def main():
     today = datetime.date.today()
     three_month_ago = today - datetime.timedelta(days=90)
     delete_limit_date = str(three_month_ago)
+    print(f"Delete limit date: {delete_limit_date}")
 
-    #delete_limit_date = "2023-06-12"
+    # delete_limit_date = "2025-01-30"
 
     #まずは条件に合致する（この場合は古い情報）要素だけをNotionのDBから抜き出す。
     notion_url_db = main_local.notionurldb
@@ -24,7 +25,6 @@ def main():
 
     #ヘッダー。これは固定
     headers = {
-        "Accept": "application/json",
         "Notion-Version": "2022-06-28",
         "Content-Type": "application/json",
         "Authorization": "Bearer " + api_key
@@ -50,14 +50,18 @@ def main():
         }
     }
 
-    response = requests.request('POST', url=notion_url_db, json = payload, headers=headers)
+    response = requests.request('POST', url=notion_url_db, json=payload, headers=headers)
+    print(response.status_code)
+    if response.status_code != 200:
+        print("Error: ", response.text)
+        return
 
     #これで作成日が古すぎる項目のページIDを取得できる。
     result = re.findall(r'"page","id":"(.*?)"', response.text)
 
     #NotionAPIで、ページを削除するJSON
     payload_del = {
-        "archived": True
+        "in_trash": True
     }
 
     for page_id in result:
