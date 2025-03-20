@@ -1,8 +1,7 @@
 .vscode/
 .venv/
 main_local.py
-notion_pagenate.py
-Tests/
+tests/
 booklist.py
 
 

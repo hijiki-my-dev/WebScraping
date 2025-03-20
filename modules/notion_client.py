@@ -2,6 +2,9 @@ import os
 import time
 import requests
 import main_local
+from utils import Logger, log_level
+
+logger = Logger(log_level=log_level)
 
 
 class NotionClient:
@@ -23,7 +26,7 @@ class NotionClient:
         time.sleep(1)
         response = requests.request("POST", url=self.notion_url, headers=self.headers)
 
-        print(response.status_code)
+        logger.debug(f"In NotionClient.get_current_pages status code: {response.status_code}")
 
         # 最初100個のレスポンスを文字列として格納する。この後、ループで追加していく。
         response_text = response.text
@@ -61,6 +64,7 @@ class NotionClient:
         }
 
         response = requests.request("POST", url=notion_url, json=payload, headers=self.headers)
+        logger.debug(f"In NotionClient.add_to_notion status code: {response.status_code}")
         if response.status_code != 200:
             # メールでエラー通知
             pass

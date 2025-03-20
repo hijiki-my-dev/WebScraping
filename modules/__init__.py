@@ -1,2 +1,2 @@
-from modules.logger import Logger
 from modules.notion_client import NotionClient
+from modules.remove import delete_old_pages

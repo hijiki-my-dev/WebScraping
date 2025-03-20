@@ -1,4 +1,4 @@
-#Notionに追加したのが結構前のやつは削除する。
+# Notionに追加したのが結構前のやつは削除する。
 import json
 import requests
 import re
@@ -8,7 +8,7 @@ import datetime
 import main_local
 
 
-def main():
+def delete_old_pages():
     #この日付より前のメモを消すことにする。
     today = datetime.date.today()
     three_month_ago = today - datetime.timedelta(days=90)
@@ -68,5 +68,3 @@ def main():
         time.sleep(0.8)
         notion_url_page = "https://api.notion.com/v1/pages/" + page_id
         response = requests.request('PATCH', url=notion_url_page, json = payload_del, headers=headers)
-
-# main()

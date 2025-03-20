@@ -6,7 +6,18 @@ from email.mime.text import MIMEText
 from email import policy
 import main_local
 
-def main(mess):
+# リクエストエラーが発生した際にメールを送る
+def request_error_mail(error_point, status_code):
+    message = (
+        "スクレイピングプログラムの"
+        + error_point
+        + "でリクエスト時にエラーが発生した可能性があります。HTTPステータスコードは"
+        + str(status_code)
+        + "です。"
+    )
+    send_mail(message)
+
+def send_mail(mess):
     #SMTPサーバーに接続
     smtp_server = "smtp.gmail.com"
     port = 587
@@ -29,4 +40,3 @@ def main(mess):
     server.send_message(message)
 
     server.quit()
-    

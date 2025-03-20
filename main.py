@@ -10,16 +10,10 @@ import os
 from dataclasses import dataclass
 from logging import DEBUG, ERROR
 
-# import module
-import main_local
-import booklist
-import remove
-import error_mail
-from modules import Logger, NotionClient
+from modules import delete_old_pages, NotionClient
+from utils import booklist, Logger, log_level, request_error_mail
 
-LOG_LEVEL = DEBUG
-
-logger = Logger(log_level=LOG_LEVEL)
+logger = Logger(log_level=log_level)
 
 
 
@@ -31,25 +25,6 @@ class book_info:
     title: str
     tag: str
     date: str
-
-
-# デバッグ用の関数。引数に文字列を指定するとTestsディレクトリ（ローカルのみ）内にファイルを作成。
-def debug_file(s):
-    path = "Tests/output.txt"
-    with open(path, mode="w") as f:
-        f.write(s)
-
-
-# リクエストエラーが発生した際にメールを送る
-def request_error_mail(error_point, status_code):
-    message = (
-        "スクレイピングプログラムの"
-        + error_point
-        + "でリクエスト時にエラーが発生した可能性があります。HTTPステータスコードは"
-        + str(status_code)
-        + "です。"
-    )
-    error_mail.main(message)
 
 
 # ガガガ文庫用。"8月刊は8月18日発売予定"の形式で文字列を受け取って、2023-08-18などを返す。
@@ -351,16 +326,13 @@ def main():
     notion_client = NotionClient()
     current_db = notion_client.get_current_pages()
 
-    # notion_url_db = main_local.notionurldb
-    # current_db = get_current(notion_url_db)
-
     # for i in range(len(all_list)):
     #     # 既存のデータベースに含まれている場合はスキップ
     #     if all_list[i].title in current_db:
     #         continue
     #     else:
     #         check_flag = 0
-    #         for book in booklist.l:
+    #         for book in booklist:
     #             if book in all_list[i].title:
     #                 check_flag = 1
     #                 break
@@ -369,6 +341,6 @@ def main():
 
 
 if __name__ == "__main__":
-    # remove.main()
+    # delete_old_pages()
     # time.sleep(10)
     main()

@@ -10,6 +10,9 @@ class Logger:
         handler.setLevel(log_level)
         formatter = Formatter('[%(levelname)s] %(message)s')
         handler.setFormatter(formatter)
+        for h in self.logger.handlers[:]:
+            self.logger.removeHandler(h)
+            h.close()
         self.logger.addHandler(handler)
 
     def debug(self, message):
