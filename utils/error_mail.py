@@ -8,13 +8,7 @@ import main_local
 
 # リクエストエラーが発生した際にメールを送る
 def request_error_mail(error_point, status_code):
-    message = (
-        "スクレイピングプログラムの"
-        + error_point
-        + "でリクエスト時にエラーが発生した可能性があります。HTTPステータスコードは"
-        + str(status_code)
-        + "です。"
-    )
+    message = f"スクレイピングプログラムの{error_point}でリクエスト時にエラーが発生した可能性があります。HTTPステータスコードは{status_code}です。"
     send_mail(message)
 
 def send_mail(mess):
