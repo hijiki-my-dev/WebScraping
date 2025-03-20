@@ -28,21 +28,26 @@ class book_info:
 
 
 # ガガガ文庫用。"8月刊は8月18日発売予定"の形式で文字列を受け取って、2023-08-18などを返す。
-def set_date_gagaga(date_origin):
-    d_list = list(date_origin)
-    del d_list[0:4]
-    if d_list[1] == "月":
-        d_list.insert(0, "0")
+def set_date_gagaga(date_origin: str) -> str:
+    d_list = list(date_origin.replace("日発売予定", ""))[-5:]
+    logger.debug(f"ガガガ d_list: {d_list}")
+
+    if not d_list[1].isdecimal():
+        # 発売日の記載形式の変更。エラーメールを通知
+        pass
+    elif d_list[0] == "は":
+        d_list[0] = "0"
+    logger.debug(f"ガガガ d_list: {d_list}")
 
     # 1月に発売する時は来年になる可能性があることに注意して、発売する年を最初につける。
     # 発売する月、今の年月を取得
     dt_now = datetime.datetime.now()
     dt_year = dt_now.year
 
-    # 1月発売の場合、今12月なら発売日は来年
+    # 1月発売の場合、今11~12月なら発売日は来年
     if (d_list[0] == "0") & (d_list[1] == "1"):
         dt_month = dt_now.month
-        if dt_month == 12:
+        if dt_month == 11 or dt_month == 12:
             dt_year += 1
 
     # ["y", "y", "y", "y", "-"]の形式のリストを作成
@@ -52,7 +57,6 @@ def set_date_gagaga(date_origin):
     # yyyy-mm-ddの形式の文字列にする。
     d = "".join(d_list_year)
     d = d.replace("月", "-")
-    d = d.replace("日発売予定", "")
 
     return d
 
@@ -158,7 +162,7 @@ def gagaga(all_list):
     elms = soup.select(".content > #title > h3")
     tag = "ガガガ"
 
-    date_origin = soup.select(".heading > .headingReleasedate")
+    date_origin = soup.select(".heading > .headingReleasedate2")
     date = set_date_gagaga(date_origin[0].text)
 
     for i in range(len(elms)):
@@ -317,14 +321,14 @@ def main():
     all_list = []
     # all_list = dengeki(all_list)
     # all_list = mf(all_list)
-    # all_list = gagaga(all_list)
+    all_list = gagaga(all_list)
     # all_list = fantasia(all_list)
     # all_list = ga(all_list)
     # all_list = sneaker(all_list)
 
     # 現在のデータベース情報を取得
-    notion_client = NotionClient()
-    current_db = notion_client.get_current_pages()
+    # notion_client = NotionClient()
+    # current_db = notion_client.get_current_pages()
 
     # for i in range(len(all_list)):
     #     # 既存のデータベースに含まれている場合はスキップ
