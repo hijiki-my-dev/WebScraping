@@ -2,6 +2,7 @@
 
 import requests
 from bs4 import BeautifulSoup
+import bs4
 import time
 import json
 import datetime
@@ -21,7 +22,7 @@ logger = Logger(log_level=log_level)
 
 
 @dataclass
-class book_info:
+class BookInfo:
     title: str
     tag: str
     date: str
@@ -29,15 +30,15 @@ class book_info:
 
 # ガガガ文庫用。"8月刊は8月18日発売予定"の形式で文字列を受け取って、2023-08-18などを返す。
 def set_date_gagaga(date_origin: str) -> str:
-    d_list = list(date_origin.replace("日発売予定", ""))[-5:]
-    logger.debug(f"ガガガ d_list: {d_list}")
+    date_list = list(date_origin.replace("日発売予定", ""))[-5:]
+    # logger.debug(f"ガガガ date_list: {date_list}")
 
-    if not d_list[1].isdecimal():
+    if not date_list[1].isdecimal():
         # 発売日の記載形式の変更。エラーメールを通知
         pass
-    elif d_list[0] == "は":
-        d_list[0] = "0"
-    logger.debug(f"ガガガ d_list: {d_list}")
+    elif date_list[0] == "は":
+        date_list[0] = "0"
+    # logger.debug(f"ガガガ date_list: {date_list}")
 
     # 1月に発売する時は来年になる可能性があることに注意して、発売する年を最初につける。
     # 発売する月、今の年月を取得
@@ -45,20 +46,74 @@ def set_date_gagaga(date_origin: str) -> str:
     dt_year = dt_now.year
 
     # 1月発売の場合、今11~12月なら発売日は来年
-    if (d_list[0] == "0") & (d_list[1] == "1"):
+    if (date_list[0] == "0") & (date_list[1] == "1"):
         dt_month = dt_now.month
         if dt_month == 11 or dt_month == 12:
             dt_year += 1
 
     # ["y", "y", "y", "y", "-"]の形式のリストを作成
-    d_list_year = list(str(dt_year) + "-")
-    d_list_year.extend(d_list)
+    date_list_year = list(str(dt_year) + "-")
+    date_list_year.extend(date_list)
 
     # yyyy-mm-ddの形式の文字列にする。
-    d = "".join(d_list_year)
+    d = "".join(date_list_year)
     d = d.replace("月", "-")
 
     return d
+
+
+
+class BaseScraper:
+    def __init__(self, urls: list[str]):
+        self.urls = urls
+        self.date = None
+
+    def get_soup(self, url: str):
+        time.sleep(1)
+        r = requests.get(url)
+        if r.status_code != 200:
+            request_error_mail(self.tag, r.status_code)
+            return
+        soup = BeautifulSoup(r.content, "html.parser")
+        return soup
+
+    def add_book(self, elms: bs4.element.ResultSet, all_book_list: list[BookInfo], dates: list[str]) -> list[BookInfo]:
+        for elm, date in zip(elms, dates):
+            book = BookInfo(elm.text, self.tag, date)
+            all_book_list.append(book)
+        return all_book_list
+
+
+class DengekiScraper(BaseScraper):
+    def __init__(self):
+        urls = ["https://dengekibunko.jp/product/newrelease-bunko.html"]
+        super().__init__(urls)
+        self.tag = "電撃"
+
+    def scrape(self, all_book_list: list[BookInfo]):
+        soup = self.get_soup(self.urls[0])
+        elms = soup.select(".p-books-media__title > a")
+        date_elms = soup.find_all("td", string=re.compile("日発売"))
+        date_iso_list = []
+        for elm in date_elms:
+            date_list = list(elm.text)
+            if date_list[6] == "月":
+                date_list.insert(5, "0")
+            if date_list[9] == "日":
+                date_list.insert(8, "0")
+
+            d = "".join(date_list)
+
+            d = d.replace("年", "-")
+            d = d.replace("月", "-")
+            d = d.replace("日発売", "")
+
+            date_iso_list.append(d)
+
+        # スマホ用とPC用で、要素が重複。インデックスが奇数のものを削除。
+        del date_iso_list[1::2]
+        return self.add_book(elms, all_book_list, date_iso_list)
+
 
 # スクレイピングの部分
 def dengeki(all_list):
@@ -83,13 +138,13 @@ def dengeki(all_list):
     date_iso_list = []
     for elm in date_elms:
         d = elm.text
-        d_list = list(d)
-        if d_list[6] == "月":
-            d_list.insert(5, "0")
-        if d_list[9] == "日":
-            d_list.insert(8, "0")
+        date_list = list(d)
+        if date_list[6] == "月":
+            date_list.insert(5, "0")
+        if date_list[9] == "日":
+            date_list.insert(8, "0")
 
-        d = "".join(d_list)
+        d = "".join(date_list)
 
         d = d.replace("年", "-")
         d = d.replace("月", "-")
@@ -102,7 +157,7 @@ def dengeki(all_list):
 
     # 各作品のタイトルと発売日とレーベルを変数とするインスタンスのリストを生成。
     for i in range(len(elms)):
-        cl = book_info(elms[i].text, tag, date_iso_list[i])
+        cl = BookInfo(elms[i].text, tag, date_iso_list[i])
         all_list.append(cl)
 
     return all_list
@@ -126,13 +181,13 @@ def mf(all_list):
     date_iso_list = []
     for elm in date_elms:
         d = elm.text
-        d_list = list(d)
-        if d_list[10] == "月":
-            d_list.insert(9, "0")
-        if d_list[13] == "日":
-            d_list.insert(12, "0")
+        date_list = list(d)
+        if date_list[10] == "月":
+            date_list.insert(9, "0")
+        if date_list[13] == "日":
+            date_list.insert(12, "0")
 
-        d = "".join(d_list)
+        d = "".join(date_list)
 
         d = d.replace("発売日：", "")
         d = d.replace("年", "-")
@@ -142,7 +197,7 @@ def mf(all_list):
         date_iso_list.append(d)
 
     for i in range(len(elms)):
-        cl = book_info(elms[i].text, tag, date_iso_list[i])
+        cl = BookInfo(elms[i].text, tag, date_iso_list[i])
         all_list.append(cl)
 
     return all_list
@@ -165,9 +220,15 @@ def gagaga(all_list):
     date_origin = soup.select(".heading > .headingReleasedate2")
     date = set_date_gagaga(date_origin[0].text)
 
-    for i in range(len(elms)):
-        cl = book_info(elms[i].text, tag, date)
+    # logger.debug(f"elms: {type(elms)}")
+    for elm in elms:
+        # logger.debug(f"elm: {type(elm.text)}")
+        cl = BookInfo(elm.text, tag, date)
         all_list.append(cl)
+    # logger.debug(f"all_list: {all_list}")
+    # for i in range(len(elms)):
+    #     cl = BookInfo(elms[i].text, tag, date)
+    #     all_list.append(cl)
     return all_list
 
 
@@ -189,13 +250,13 @@ def fantasia(all_list):
     date_iso_list = []
     for elm in date_elms:
         d = elm.text
-        d_list = list(d)
-        if d_list[10] == "月":
-            d_list.insert(9, "0")
-        if d_list[13] == "日":
-            d_list.insert(12, "0")
+        date_list = list(d)
+        if date_list[10] == "月":
+            date_list.insert(9, "0")
+        if date_list[13] == "日":
+            date_list.insert(12, "0")
 
-        d = "".join(d_list)
+        d = "".join(date_list)
 
         d = d.replace("発売日：", "")
         d = d.replace("年", "-")
@@ -205,7 +266,7 @@ def fantasia(all_list):
         date_iso_list.append(d)
 
     for i in range(len(elms)):
-        cl = book_info(elms[i].text, tag, date_iso_list[i])
+        cl = BookInfo(elms[i].text, tag, date_iso_list[i])
         all_list.append(cl)
 
     return all_list
@@ -256,10 +317,10 @@ def ga(all_list):
     tag = "GA"
 
     for i in range(len(elms1)):
-        cl1 = book_info(elms1[i].text, tag, date1)
+        cl1 = BookInfo(elms1[i].text, tag, date1)
         all_list.append(cl1)
     for i in range(len(elms2)):
-        cl2 = book_info(elms2[i].text, tag, date2)
+        cl2 = BookInfo(elms2[i].text, tag, date2)
         all_list.append(cl2)
 
     return all_list
@@ -308,10 +369,10 @@ def sneaker(all_list):
     tag = "スニーカー"
 
     for i in range(len(elms1)):
-        cl1 = book_info(elms1[i].text, tag, date1)
+        cl1 = BookInfo(elms1[i].text, tag, date1)
         all_list.append(cl1)
     for i in range(len(elms2)):
-        cl2 = book_info(elms2[i].text, tag, date2)
+        cl2 = BookInfo(elms2[i].text, tag, date2)
         all_list.append(cl2)
 
     return all_list
@@ -319,9 +380,15 @@ def sneaker(all_list):
 
 def main():
     all_list = []
+    scraping_classes = [DengekiScraper]
+    for scraping_class in scraping_classes:
+        all_list = scraping_class().scrape(all_list)
+
     # all_list = dengeki(all_list)
+    # all_list = DengekiScraper().scrape(all_list)
+    logger.debug(f"電撃文庫: {all_list}")
     # all_list = mf(all_list)
-    all_list = gagaga(all_list)
+    # all_list = gagaga(all_list)
     # all_list = fantasia(all_list)
     # all_list = ga(all_list)
     # all_list = sneaker(all_list)
