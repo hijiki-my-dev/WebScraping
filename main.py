@@ -12,13 +12,12 @@ def main():
     scraping_classes = [DengekiScraper, MfScraper, GagagaScraper, FantasiaScraper, GaScraper, SneakerScraper]
     # scraping_classes = [SneakerScraper]
     for scraping_class in scraping_classes:
-        all_book_list = scraping_class().scrape(all_book_list)
+        all_book_list += scraping_class().scrape()
+        logger.debug(f"Length of book_list: {len(all_book_list)}")
 
     # all_book_list = dengeki(all_book_list)
     # all_book_list = DengekiScraper().scrape(all_book_list)
-    logger.debug(len(all_book_list))
-    logger.debug(all_book_list)
-    # logger.debug(f"電撃, MF: {all_list}")
+
     # all_list = mf(all_list)
     # all_list = gagaga(all_list)
     # all_list = fantasia(all_list)

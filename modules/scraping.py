@@ -28,11 +28,12 @@ class BaseScraper:
         soup = BeautifulSoup(r.content, "html.parser")
         return soup
 
-    def add_book(self, elms: bs4.element.ResultSet, all_book_list: list[BookInfo], dates: list[str]) -> list[BookInfo]:
+    def set_book_info(self, elms: bs4.element.ResultSet, dates: list[str]) -> list[BookInfo]:
+        book_list = []
         for elm, date in zip(elms, dates):
             book = BookInfo(elm.text, self.tag, date)
-            all_book_list.append(book)
-        return all_book_list
+            book_list.append(book)
+        return book_list
 
 
 class DengekiScraper(BaseScraper):
@@ -41,7 +42,7 @@ class DengekiScraper(BaseScraper):
         super().__init__(urls)
         self.tag = "電撃"
 
-    def scrape(self, all_book_list: list[BookInfo]) -> list[BookInfo]:
+    def scrape(self) -> list[BookInfo]:
         soup = self.get_soup(self.urls[0])
         elms = soup.select(".p-books-media__title > a")
         date_elms = soup.find_all("td", string=re.compile("日発売"))
@@ -63,7 +64,7 @@ class DengekiScraper(BaseScraper):
 
         # スマホ用とPC用で、要素が重複。インデックスが奇数のものを削除。
         del date_iso_list[1::2]
-        return self.add_book(elms, all_book_list, date_iso_list)
+        return self.set_book_info(elms, date_iso_list)
 
 
 class MfScraper(BaseScraper):
@@ -72,7 +73,7 @@ class MfScraper(BaseScraper):
         super().__init__(urls)
         self.tag = "MF"
 
-    def scrape(self, all_book_list: list[BookInfo]) -> list[BookInfo]:
+    def scrape(self) -> list[BookInfo]:
         soup = self.get_soup(self.urls[0])
         elms = soup.select(".detail > h2 > a")
         date_elms = soup.find_all("p", string=re.compile("発売日"))
@@ -93,7 +94,7 @@ class MfScraper(BaseScraper):
 
             date_iso_list.append(d)
 
-        return self.add_book(elms, all_book_list, date_iso_list)
+        return self.set_book_info(elms, date_iso_list)
 
 
 class GagagaScraper(BaseScraper):
@@ -126,12 +127,12 @@ class GagagaScraper(BaseScraper):
         d = "".join(date_list_year)
         d = d.replace("月", "-")
 
-    def scrape(self, all_book_list: list[BookInfo]) -> list[BookInfo]:
+    def scrape(self) -> list[BookInfo]:
         soup = self.get_soup(self.urls[0])
         elms = soup.select(".content > #title > h3")
         date_origin = soup.select(".heading > .headingReleasedate2")
         date = self.set_date(date_origin[0].text)
-        return self.add_book(elms, all_book_list, [date]*len(elms))
+        return self.set_book_info(elms, [date]*len(elms))
 
 
 class FantasiaScraper(BaseScraper):
@@ -140,7 +141,7 @@ class FantasiaScraper(BaseScraper):
         super().__init__(urls)
         self.tag = "ファンタジア"
 
-    def scrape(self, all_book_list: list[BookInfo]) -> list[BookInfo]:
+    def scrape(self) -> list[BookInfo]:
         soup = self.get_soup(self.urls[0])
         elms = soup.select(".detail > .head > h3 > a")
         date_elms = soup.find_all("p", string=re.compile("発売日"))
@@ -161,7 +162,7 @@ class FantasiaScraper(BaseScraper):
 
             date_iso_list.append(d)
 
-        return self.add_book(elms, all_book_list, date_iso_list)
+        return self.set_book_info(elms, date_iso_list)
 
 
 class GaScraper(BaseScraper):
@@ -170,7 +171,7 @@ class GaScraper(BaseScraper):
         super().__init__(urls)
         self.tag = "GA"
 
-    def scrape(self, all_book_list: list[BookInfo]) -> list[BookInfo]:
+    def scrape(self) -> list[BookInfo]:
         soup1 = self.get_soup(self.urls[0])
         soup2 = self.get_soup(self.urls[1])
 
@@ -200,8 +201,8 @@ class GaScraper(BaseScraper):
             d_today[8], d_today[9] = "1", "5"
             date2 = "".join(d_today)
 
-        all_book_list = self.add_book(elms1, all_book_list, [date1]*len(elms1))
-        return self.add_book(elms2, all_book_list, [date2]*len(elms2))
+        book_list = self.set_book_info(elms1, [date1]*len(elms1))
+        return book_list + self.set_book_info(elms2, [date2]*len(elms2))
 
 class SneakerScraper(BaseScraper):
     def __init__(self):
@@ -222,7 +223,7 @@ class SneakerScraper(BaseScraper):
         super().__init__(urls)
         self.tag = "スニーカー"
 
-    def scrape(self, all_book_list: list[BookInfo]) -> list[BookInfo]:
+    def scrape(self) -> list[BookInfo]:
         soup1 = self.get_soup(self.urls[0])
         soup2 = self.get_soup(self.urls[1])
 
@@ -237,5 +238,5 @@ class SneakerScraper(BaseScraper):
         # 来月の発売日
         date2 = self.year + "-" + self.next_month + "-" + "01"
 
-        all_book_list = self.add_book(elms1, all_book_list, [date1]*len(elms1))
-        return self.add_book(elms2, all_book_list, [date2]*len(elms2))
+        book_list = self.set_book_info(elms1, [date1]*len(elms1))
+        return book_list + self.set_book_info(elms2, [date2]*len(elms2))
