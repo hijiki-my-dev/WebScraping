@@ -6,7 +6,11 @@ import time
 import datetime
 import re
 
-from utils import request_error_mail
+from utils import Logger, log_level, request_error_mail
+
+
+logger = Logger(log_level=log_level)
+
 
 @dataclass
 class BookInfo:
@@ -43,6 +47,7 @@ class DengekiScraper(BaseScraper):
         self.tag = "電撃"
 
     def scrape(self) -> list[BookInfo]:
+        logger.debug("Start scraping Dengeki Bunko")
         soup = self.get_soup(self.urls[0])
         elms = soup.select(".p-books-media__title > a")
         date_elms = soup.find_all("td", string=re.compile("日発売"))
@@ -74,6 +79,7 @@ class MfScraper(BaseScraper):
         self.tag = "MF"
 
     def scrape(self) -> list[BookInfo]:
+        logger.debug("Start scraping MF Bunko")
         soup = self.get_soup(self.urls[0])
         elms = soup.select(".detail > h2 > a")
         date_elms = soup.find_all("p", string=re.compile("発売日"))
@@ -104,6 +110,7 @@ class GagagaScraper(BaseScraper):
         self.tag = "ガガガ"
 
     def set_date(self, date_origin: str) -> str:
+        logger.debug("Start scraping Gagaga Bunko")
         date_list = list(date_origin.replace("日発売予定", ""))[-5:]
         if not date_list[1].isdecimal():
             # 発売日の記載形式の変更。エラーメールを通知
@@ -142,6 +149,7 @@ class FantasiaScraper(BaseScraper):
         self.tag = "ファンタジア"
 
     def scrape(self) -> list[BookInfo]:
+        logger.debug("Start scraping Fantasia Bunko")
         soup = self.get_soup(self.urls[0])
         elms = soup.select(".detail > .head > h3 > a")
         date_elms = soup.find_all("p", string=re.compile("発売日"))
@@ -172,6 +180,7 @@ class GaScraper(BaseScraper):
         self.tag = "GA"
 
     def scrape(self) -> list[BookInfo]:
+        logger.debug("Start scraping GA Bunko")
         soup1 = self.get_soup(self.urls[0])
         soup2 = self.get_soup(self.urls[1])
 
@@ -224,6 +233,7 @@ class SneakerScraper(BaseScraper):
         self.tag = "スニーカー"
 
     def scrape(self) -> list[BookInfo]:
+        logger.debug("Start scraping Sneaker Bunko")
         soup1 = self.get_soup(self.urls[0])
         soup2 = self.get_soup(self.urls[1])
 

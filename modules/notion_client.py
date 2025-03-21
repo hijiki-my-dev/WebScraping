@@ -2,7 +2,7 @@ import os
 import time
 import requests
 import main_local
-from utils import Logger, log_level
+from utils import Logger, log_level, request_error_mail
 
 logger = Logger(log_level=log_level)
 
@@ -43,6 +43,8 @@ class NotionClient:
                 if response.ok:
                     search_response_obj = response.json()
                     pages_and_databases.extend(search_response_obj.get("results"))
+        else:
+            request_error_mail("Notionのページ取得", response.status_code)
 
         return response_text
 
@@ -64,7 +66,5 @@ class NotionClient:
         }
 
         response = requests.request("POST", url=notion_url, json=payload, headers=self.headers)
-        logger.debug(f"In NotionClient.add_to_notion status code: {response.status_code}")
         if response.status_code != 200:
-            # メールでエラー通知
-            pass
+            request_error_mail("Notionへのページ追加処理", response.status_code)

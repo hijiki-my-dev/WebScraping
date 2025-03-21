@@ -7,11 +7,11 @@ from email import policy
 import main_local
 
 # リクエストエラーが発生した際にメールを送る
-def request_error_mail(error_point, status_code):
-    message = f"スクレイピングプログラムの{error_point}でリクエスト時にエラーが発生した可能性があります。HTTPステータスコードは{status_code}です。"
+def request_error_mail(error_point: str, status_code: int):
+    message = f"スクレイピングプログラムの {error_point} において、リクエスト時にエラーが発生した可能性があります。HTTPステータスコードは{status_code}です。"
     send_mail(message)
 
-def send_mail(mess):
+def send_mail(mess: str):
     #SMTPサーバーに接続
     smtp_server = "smtp.gmail.com"
     port = 587
