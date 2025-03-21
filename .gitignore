@@ -3,6 +3,7 @@
 main_local.py
 tests/
 booklist.py
+Dockerfile_local
 
 
 # Byte-compiled / optimized / DLL files
