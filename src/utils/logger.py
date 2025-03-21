@@ -1,5 +1,10 @@
-from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
-from logging import  Formatter, getLogger, StreamHandler
+from logging import (
+    DEBUG,
+    Formatter,
+    StreamHandler,
+    getLogger,
+)
+
 
 class Logger:
     def __init__(self, log_level=DEBUG):
@@ -8,7 +13,7 @@ class Logger:
 
         handler = StreamHandler()
         handler.setLevel(log_level)
-        formatter = Formatter('[%(levelname)s] %(message)s')
+        formatter = Formatter("[%(levelname)s] %(message)s")
         handler.setFormatter(formatter)
         for h in self.logger.handlers[:]:
             self.logger.removeHandler(h)
@@ -29,6 +34,7 @@ class Logger:
 
     def critical(self, message):
         self.logger.critical(message)
+
 
 if __name__ == "__main__":
     logger = Logger()

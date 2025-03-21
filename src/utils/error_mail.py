@@ -1,23 +1,26 @@
 import smtplib
-from email.mime.multipart import  MIMEMultipart
+
+# 文字コードを調整
+from email import policy
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-#文字コードを調整
-from email import policy
 import main_local
+
 
 # リクエストエラーが発生した際にメールを送る
 def request_error_mail(error_point: str, status_code: int):
     message = f"スクレイピングプログラムの {error_point} において、リクエスト時にエラーが発生した可能性があります。HTTPステータスコードは{status_code}です。"
     send_mail(message)
 
+
 def send_mail(mess: str):
-    #SMTPサーバーに接続
+    # SMTPサーバーに接続
     smtp_server = "smtp.gmail.com"
     port = 587
     server = smtplib.SMTP(smtp_server, port)
 
-    #暗号化
+    # 暗号化
     server.starttls()
 
     login_address = main_local.mail_address

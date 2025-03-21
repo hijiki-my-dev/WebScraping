@@ -1,13 +1,13 @@
-from dataclasses import dataclass
-import requests
-from bs4 import BeautifulSoup
-import bs4
-import time
 import datetime
 import re
+import time
+from dataclasses import dataclass
+
+import bs4
+import requests
+from bs4 import BeautifulSoup
 
 from utils import Logger, log_level, request_error_mail
-
 
 logger = Logger(log_level=log_level)
 
@@ -17,6 +17,7 @@ class BookInfo:
     title: str
     tag: str
     date: str
+
 
 class BaseScraper:
     def __init__(self, urls: list[str]):
@@ -32,7 +33,9 @@ class BaseScraper:
         soup = BeautifulSoup(r.content, "html.parser")
         return soup
 
-    def set_book_info(self, elms: bs4.element.ResultSet, dates: list[str]) -> list[BookInfo]:
+    def set_book_info(
+        self, elms: bs4.element.ResultSet, dates: list[str]
+    ) -> list[BookInfo]:
         book_list = []
         for elm, date in zip(elms, dates):
             book = BookInfo(elm.text, self.tag, date)
@@ -139,7 +142,7 @@ class GagagaScraper(BaseScraper):
         elms = soup.select(".content > #title > h3")
         date_origin = soup.select(".heading > .headingReleasedate2")
         date = self.set_date(date_origin[0].text)
-        return self.set_book_info(elms, [date]*len(elms))
+        return self.set_book_info(elms, [date] * len(elms))
 
 
 class FantasiaScraper(BaseScraper):
@@ -175,7 +178,10 @@ class FantasiaScraper(BaseScraper):
 
 class GaScraper(BaseScraper):
     def __init__(self):
-        urls = ["https://ga.sbcr.jp/release/month_current/", "https://ga.sbcr.jp/release/month_next/"]
+        urls = [
+            "https://ga.sbcr.jp/release/month_current/",
+            "https://ga.sbcr.jp/release/month_next/",
+        ]
         super().__init__(urls)
         self.tag = "GA"
 
@@ -184,8 +190,12 @@ class GaScraper(BaseScraper):
         soup1 = self.get_soup(self.urls[0])
         soup2 = self.get_soup(self.urls[1])
 
-        elms1 = soup1.select(".newBook_gaBunko_wrap .title_area > .title > a > span")
-        elms2 = soup2.select(".newBook_gaBunko_wrap .title_area > .title > a > span")
+        elms1 = soup1.select(
+            ".newBook_gaBunko_wrap .title_area > .title > a > span"
+        )
+        elms2 = soup2.select(
+            ".newBook_gaBunko_wrap .title_area > .title > a > span"
+        )
 
         del elms1[1::2]
         del elms2[1::2]
@@ -210,8 +220,9 @@ class GaScraper(BaseScraper):
             d_today[8], d_today[9] = "1", "5"
             date2 = "".join(d_today)
 
-        book_list = self.set_book_info(elms1, [date1]*len(elms1))
-        return book_list + self.set_book_info(elms2, [date2]*len(elms2))
+        book_list = self.set_book_info(elms1, [date1] * len(elms1))
+        return book_list + self.set_book_info(elms2, [date2] * len(elms2))
+
 
 class SneakerScraper(BaseScraper):
     def __init__(self):
@@ -227,8 +238,16 @@ class SneakerScraper(BaseScraper):
             else:
                 self.next_month = str(dt_now.month + 1)
 
-        urls = ["https://sneakerbunko.jp/product/" + self.today[0:4] + "/" + self.today[5:7],
-                "https://sneakerbunko.jp/product/" + self.year + "/" + self.next_month]
+        urls = [
+            "https://sneakerbunko.jp/product/"
+            + self.today[0:4]
+            + "/"
+            + self.today[5:7],
+            "https://sneakerbunko.jp/product/"
+            + self.year
+            + "/"
+            + self.next_month,
+        ]
         super().__init__(urls)
         self.tag = "スニーカー"
 
@@ -248,5 +267,5 @@ class SneakerScraper(BaseScraper):
         # 来月の発売日
         date2 = self.year + "-" + self.next_month + "-" + "01"
 
-        book_list = self.set_book_info(elms1, [date1]*len(elms1))
-        return book_list + self.set_book_info(elms2, [date2]*len(elms2))
+        book_list = self.set_book_info(elms1, [date1] * len(elms1))
+        return book_list + self.set_book_info(elms2, [date2] * len(elms2))
