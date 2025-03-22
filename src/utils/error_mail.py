@@ -6,7 +6,6 @@ from email import policy
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-import main_local
 from utils import environment
 
 
@@ -26,6 +25,8 @@ def send_mail(mess: str):
     server.starttls()
 
     if environment == "local":
+        import main_local
+
         login_address = main_local.mail_address
         login_password = main_local.gmail_password
     else:
@@ -36,7 +37,7 @@ def send_mail(mess: str):
     message = MIMEMultipart(policy=policy.default)
     message["Subject"] = "ラノベスクレイピングでのエラーの可能性"
     message["From"] = "スクレイピング"
-    message["To"] = main_local.mail_address
+    message["To"] = login_address
     text = MIMEText(mess)
 
     message.attach(text)

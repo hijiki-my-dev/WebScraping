@@ -6,7 +6,9 @@ import time
 
 import requests
 
-from utils import environment
+from utils import Logger, environment, log_level
+
+logger = Logger(log_level)
 
 
 def delete_old_pages():
@@ -51,9 +53,9 @@ def delete_old_pages():
     response = requests.request(
         "POST", url=notion_url_db, json=payload, headers=headers
     )
-    print(response.status_code)
+    logger.debug(response.status_code)
     if response.status_code != 200:
-        print("Error: ", response.text)
+        logger.debug("Error: ", response.text)
         return
 
     # これで作成日が古すぎる項目のページIDを取得できる。
