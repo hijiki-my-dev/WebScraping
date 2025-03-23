@@ -8,3 +8,4 @@ from modules.scraping import (
     MfScraper,
     SneakerScraper,
 )
+from modules.storage import StorageClient
