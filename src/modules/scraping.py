@@ -66,6 +66,7 @@ class DengekiScraper(BaseScraper):
             d = d.replace("年", "-")
             d = d.replace("月", "-")
             d = d.replace("日発売", "")
+            logger.debug(f"Date for Dengeki: {d}")
 
             date_iso_list.append(d)
 
@@ -97,6 +98,7 @@ class MfScraper(BaseScraper):
             d = d.replace("年", "-")
             d = d.replace("月", "-")
             d = d.replace("日", "")
+            logger.debug(f"Date for MF: {d}")
 
             date_iso_list.append(d)
 
@@ -140,6 +142,7 @@ class GagagaScraper(BaseScraper):
         elms = soup.select(".content > #title > h3")
         date_origin = soup.select(".heading > .headingReleasedate2")
         date = self.set_date(date_origin[0].text)
+        logger.debug(f"Date for Gagaga: {date}")
         return self.set_book_info(elms, [date] * len(elms))
 
 
@@ -167,6 +170,7 @@ class FantasiaScraper(BaseScraper):
             d = d.replace("年", "-")
             d = d.replace("月", "-")
             d = d.replace("日", "")
+            logger.debug(f"Date for Fantasia: {d}")
 
             date_iso_list.append(d)
 
@@ -200,6 +204,7 @@ class GaScraper(BaseScraper):
         date1 = list(str(datetime.date.today()))
         date1[-2], date1[-1] = "1", "5"
         date1 = "".join(date1)
+        logger.debug(f"Date for GA 1: {date1}")
 
         d_today = list(str(datetime.date.today()))
         date2 = ""
@@ -216,6 +221,7 @@ class GaScraper(BaseScraper):
             d_today[5], d_today[6] = next_month[0], next_month[1]
             d_today[8], d_today[9] = "1", "5"
             date2 = "".join(d_today)
+        logger.debug(f"Date for GA 2: {date2}")
 
         book_list = self.set_book_info(elms1, [date1] * len(elms1))
         return book_list + self.set_book_info(elms2, [date2] * len(elms2))
@@ -260,9 +266,11 @@ class SneakerScraper(BaseScraper):
         date1 = list(self.today)
         date1[-2], date1[-1] = "0", "1"
         date1 = "".join(date1)
+        logger.debug(f"Date for Sneaker 1: {date1}")
 
         # 来月の発売日
         date2 = self.year + "-" + self.next_month + "-" + "01"
+        logger.debug(f"Date for Sneaker 2: {date2}")
 
         book_list = self.set_book_info(elms1, [date1] * len(elms1))
         return book_list + self.set_book_info(elms2, [date2] * len(elms2))

@@ -76,8 +76,10 @@ def run() -> None:
             )
     logger.info("Finish all process")
 
+
 if __name__ == "__main__":
     from modules import delete_old_pages
+
     delete_old_pages()
     time.sleep(5)
     run()
