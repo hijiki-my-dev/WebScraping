@@ -24,7 +24,7 @@ class BaseScraper:
         self.urls = urls
         self.date = None
 
-    def get_soup(self, url: str):
+    def get_soup(self, url: str) -> BeautifulSoup:
         time.sleep(1)
         r = requests.get(url)
         if r.status_code != 200:

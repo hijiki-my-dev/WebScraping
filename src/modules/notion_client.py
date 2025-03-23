@@ -66,7 +66,7 @@ class NotionClient:
 
     def add_to_notion(
         self, title: str, tag: str, date: str, checkbox_flg: int = 0
-    ):
+    ) -> None:
         notion_url = "https://api.notion.com/v1/pages"
 
         payload = {

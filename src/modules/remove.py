@@ -11,7 +11,7 @@ from utils import Logger, environment, log_level
 logger = Logger(log_level)
 
 
-def delete_old_pages():
+def delete_old_pages() -> None:
     logger.info("Start deleting old pages")
     # この日付より前のメモを消す
     today = datetime.date.today()

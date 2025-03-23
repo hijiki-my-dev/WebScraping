@@ -15,7 +15,7 @@ from utils import Logger, reading_book_list, log_level, environment, storage_buc
 logger = Logger(log_level=log_level)
 
 
-def run():
+def run()-> None:
     logger.info("Start scraping")
     if not environment == "local":
         logger.info("Get reading book list from storage")
