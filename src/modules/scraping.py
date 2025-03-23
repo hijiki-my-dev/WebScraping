@@ -63,7 +63,6 @@ class DengekiScraper(BaseScraper):
                 date_list.insert(8, "0")
 
             d = "".join(date_list)
-
             d = d.replace("年", "-")
             d = d.replace("月", "-")
             d = d.replace("日発売", "")
@@ -88,15 +87,13 @@ class MfScraper(BaseScraper):
         date_elms = soup.find_all("p", string=re.compile("発売日"))
         date_iso_list = []
         for elm in date_elms:
-            date_list = list(elm.text)
-            if date_list[10] == "月":
-                date_list.insert(9, "0")
-            if date_list[13] == "日":
-                date_list.insert(12, "0")
+            date_list = list(elm.text)[4:]
+            if date_list[6] == "月":
+                date_list.insert(5, "0")
+            if date_list[9] == "日":
+                date_list.insert(8, "0")
 
-            d = "".join(date_list)
-
-            d = d.replace("発売日：", "")
+            d = "".join(date_list[:11])
             d = d.replace("年", "-")
             d = d.replace("月", "-")
             d = d.replace("日", "")
@@ -166,7 +163,6 @@ class FantasiaScraper(BaseScraper):
                 date_list.insert(12, "0")
 
             d = "".join(date_list)
-
             d = d.replace("発売日：", "")
             d = d.replace("年", "-")
             d = d.replace("月", "-")
