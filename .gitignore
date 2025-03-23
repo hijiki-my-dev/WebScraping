@@ -3,6 +3,7 @@
 main_local.py
 tests/
 book_list.py
+book_list.txt
 Dockerfile_local
 
 
