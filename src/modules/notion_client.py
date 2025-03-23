@@ -88,5 +88,7 @@ class NotionClient:
         )
         if response.status_code != 200:
             request_error_mail(
-                "Notionへのページ追加処理", response.status_code
+                "Notionへのページ追加処理",
+                response.status_code,
+                f"payload:\n{payload}",
             )

@@ -6,6 +6,7 @@ from utils import Logger, log_level
 
 logger = Logger(log_level)
 
+
 class StorageClient:
     def __init__(self, bucket_name: str):
         self.client = storage.Client()
@@ -17,6 +18,8 @@ class StorageClient:
         blob = self.bucket.blob(file_name)
         content = blob.download_as_text()
         # 改行で分割してリスト化
-        words_list = [line.strip() for line in content.splitlines() if line.strip()]
+        words_list = [
+            line.strip() for line in content.splitlines() if line.strip()
+        ]
 
         return words_list

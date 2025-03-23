@@ -8,19 +8,28 @@ from modules import (
     MfScraper,
     NotionClient,
     SneakerScraper,
-    StorageClient
+    StorageClient,
 )
-from utils import Logger, reading_book_list, log_level, environment, storage_bucket, storage_book_list_path
+from utils import (
+    Logger,
+    environment,
+    log_level,
+    reading_book_list,
+    storage_book_list_path,
+    storage_bucket,
+)
 
 logger = Logger(log_level=log_level)
 
 
-def run()-> None:
+def run() -> None:
     logger.info("Start scraping")
     if not environment == "local":
         logger.info("Get reading book list from storage")
         storage_client = StorageClient(storage_bucket)
-        reading_book_list = storage_client.get_reading_book_list(storage_book_list_path)
+        reading_book_list = storage_client.get_reading_book_list(
+            storage_book_list_path
+        )
     logger.info(f"Reading book list: {reading_book_list}")
 
     all_book_list = []

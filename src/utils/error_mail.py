@@ -10,8 +10,10 @@ from utils import environment
 
 
 # リクエストエラーが発生した際にメールを送る
-def request_error_mail(error_point: str, status_code: int) -> None:
-    message = f"スクレイピングプログラムの {error_point} において、リクエスト時にエラーが発生した可能性があります。HTTPステータスコードは{status_code}です。"
+def request_error_mail(
+    error_point: str, status_code: int, additional_mess: str = ""
+) -> None:
+    message = f"スクレイピングプログラムの {error_point} において、リクエスト時にエラーが発生した可能性があります。HTTPステータスコードは{status_code}です。\n{additional_mess}"
     send_mail(message)
 
 
