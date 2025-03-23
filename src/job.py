@@ -23,6 +23,7 @@ logger = Logger(log_level=log_level)
 
 
 def run() -> None:
+    global reading_book_list
     logger.info("Start scraping")
     if not environment == "local":
         logger.info("Get reading book list from storage")
@@ -43,9 +44,11 @@ def run() -> None:
     ]
     for scraping_class in scraping_classes:
         try:
-            all_book_list += scraping_class().scrape()
+            book_list = scraping_class().scrape()
         except:
+            book_list = []
             logger.error(f"Error occurred in {scraping_class}")
+        all_book_list += book_list
         logger.info(f"Length of book_list: {len(all_book_list)}")
 
     # 現在のデータベース情報を取得
@@ -72,3 +75,9 @@ def run() -> None:
                 check_flag,
             )
     logger.info("Finish all process")
+
+if __name__ == "__main__":
+    from modules import delete_old_pages
+    delete_old_pages()
+    time.sleep(5)
+    run()
