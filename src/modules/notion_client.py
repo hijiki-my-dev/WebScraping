@@ -66,7 +66,7 @@ class NotionClient:
 
     def add_to_notion(
         self, title: str, tag: str, date: str, checkbox_flg: int = 0
-    ):
+    ) -> None:
         notion_url = "https://api.notion.com/v1/pages"
 
         payload = {
@@ -88,5 +88,7 @@ class NotionClient:
         )
         if response.status_code != 200:
             request_error_mail(
-                "Notionへのページ追加処理", response.status_code
+                "Notionへのページ追加処理",
+                response.status_code,
+                f"payload:\n{payload}",
             )

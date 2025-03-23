@@ -2,7 +2,8 @@
 .venv/
 main_local.py
 tests/
-booklist.py
+book_list.py
+book_list.txt
 Dockerfile_local
 
 

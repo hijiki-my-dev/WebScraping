@@ -24,7 +24,7 @@ class BaseScraper:
         self.urls = urls
         self.date = None
 
-    def get_soup(self, url: str):
+    def get_soup(self, url: str) -> BeautifulSoup:
         time.sleep(1)
         r = requests.get(url)
         if r.status_code != 200:
@@ -50,7 +50,7 @@ class DengekiScraper(BaseScraper):
         self.tag = "電撃"
 
     def scrape(self) -> list[BookInfo]:
-        logger.debug("Start scraping Dengeki Bunko")
+        logger.info("Start scraping Dengeki Bunko")
         soup = self.get_soup(self.urls[0])
         elms = soup.select(".p-books-media__title > a")
         date_elms = soup.find_all("td", string=re.compile("日発売"))
@@ -63,10 +63,10 @@ class DengekiScraper(BaseScraper):
                 date_list.insert(8, "0")
 
             d = "".join(date_list)
-
             d = d.replace("年", "-")
             d = d.replace("月", "-")
             d = d.replace("日発売", "")
+            logger.debug(f"Date for Dengeki: {d}")
 
             date_iso_list.append(d)
 
@@ -82,24 +82,23 @@ class MfScraper(BaseScraper):
         self.tag = "MF"
 
     def scrape(self) -> list[BookInfo]:
-        logger.debug("Start scraping MF Bunko")
+        logger.info("Start scraping MF Bunko")
         soup = self.get_soup(self.urls[0])
         elms = soup.select(".detail > h2 > a")
         date_elms = soup.find_all("p", string=re.compile("発売日"))
         date_iso_list = []
         for elm in date_elms:
-            date_list = list(elm.text)
-            if date_list[10] == "月":
-                date_list.insert(9, "0")
-            if date_list[13] == "日":
-                date_list.insert(12, "0")
+            date_list = list(elm.text)[4:]
+            if date_list[6] == "月":
+                date_list.insert(5, "0")
+            if date_list[9] == "日":
+                date_list.insert(8, "0")
 
-            d = "".join(date_list)
-
-            d = d.replace("発売日：", "")
+            d = "".join(date_list[:11])
             d = d.replace("年", "-")
             d = d.replace("月", "-")
             d = d.replace("日", "")
+            logger.debug(f"Date for MF: {d}")
 
             date_iso_list.append(d)
 
@@ -113,7 +112,7 @@ class GagagaScraper(BaseScraper):
         self.tag = "ガガガ"
 
     def set_date(self, date_origin: str) -> str:
-        logger.debug("Start scraping Gagaga Bunko")
+        logger.info("Start scraping Gagaga Bunko")
         date_list = list(date_origin.replace("日発売予定", ""))[-5:]
         if not date_list[1].isdecimal():
             # 発売日の記載形式の変更。エラーメールを通知
@@ -136,12 +135,14 @@ class GagagaScraper(BaseScraper):
         # yyyy-mm-ddの形式の文字列にする。
         d = "".join(date_list_year)
         d = d.replace("月", "-")
+        return d
 
     def scrape(self) -> list[BookInfo]:
         soup = self.get_soup(self.urls[0])
         elms = soup.select(".content > #title > h3")
         date_origin = soup.select(".heading > .headingReleasedate2")
         date = self.set_date(date_origin[0].text)
+        logger.debug(f"Date for Gagaga: {date}")
         return self.set_book_info(elms, [date] * len(elms))
 
 
@@ -152,7 +153,7 @@ class FantasiaScraper(BaseScraper):
         self.tag = "ファンタジア"
 
     def scrape(self) -> list[BookInfo]:
-        logger.debug("Start scraping Fantasia Bunko")
+        logger.info("Start scraping Fantasia Bunko")
         soup = self.get_soup(self.urls[0])
         elms = soup.select(".detail > .head > h3 > a")
         date_elms = soup.find_all("p", string=re.compile("発売日"))
@@ -165,11 +166,11 @@ class FantasiaScraper(BaseScraper):
                 date_list.insert(12, "0")
 
             d = "".join(date_list)
-
             d = d.replace("発売日：", "")
             d = d.replace("年", "-")
             d = d.replace("月", "-")
             d = d.replace("日", "")
+            logger.debug(f"Date for Fantasia: {d}")
 
             date_iso_list.append(d)
 
@@ -186,7 +187,7 @@ class GaScraper(BaseScraper):
         self.tag = "GA"
 
     def scrape(self) -> list[BookInfo]:
-        logger.debug("Start scraping GA Bunko")
+        logger.info("Start scraping GA Bunko")
         soup1 = self.get_soup(self.urls[0])
         soup2 = self.get_soup(self.urls[1])
 
@@ -203,6 +204,7 @@ class GaScraper(BaseScraper):
         date1 = list(str(datetime.date.today()))
         date1[-2], date1[-1] = "1", "5"
         date1 = "".join(date1)
+        logger.debug(f"Date for GA 1: {date1}")
 
         d_today = list(str(datetime.date.today()))
         date2 = ""
@@ -219,6 +221,7 @@ class GaScraper(BaseScraper):
             d_today[5], d_today[6] = next_month[0], next_month[1]
             d_today[8], d_today[9] = "1", "5"
             date2 = "".join(d_today)
+        logger.debug(f"Date for GA 2: {date2}")
 
         book_list = self.set_book_info(elms1, [date1] * len(elms1))
         return book_list + self.set_book_info(elms2, [date2] * len(elms2))
@@ -252,7 +255,7 @@ class SneakerScraper(BaseScraper):
         self.tag = "スニーカー"
 
     def scrape(self) -> list[BookInfo]:
-        logger.debug("Start scraping Sneaker Bunko")
+        logger.info("Start scraping Sneaker Bunko")
         soup1 = self.get_soup(self.urls[0])
         soup2 = self.get_soup(self.urls[1])
 
@@ -263,9 +266,11 @@ class SneakerScraper(BaseScraper):
         date1 = list(self.today)
         date1[-2], date1[-1] = "0", "1"
         date1 = "".join(date1)
+        logger.debug(f"Date for Sneaker 1: {date1}")
 
         # 来月の発売日
         date2 = self.year + "-" + self.next_month + "-" + "01"
+        logger.debug(f"Date for Sneaker 2: {date2}")
 
         book_list = self.set_book_info(elms1, [date1] * len(elms1))
         return book_list + self.set_book_info(elms2, [date2] * len(elms2))
