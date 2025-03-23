@@ -12,6 +12,7 @@ logger = Logger(log_level)
 
 
 def delete_old_pages():
+    logger.info("Start deleting old pages")
     # この日付より前のメモを消す
     today = datetime.date.today()
     two_month_ago = today - datetime.timedelta(days=60)
@@ -55,11 +56,12 @@ def delete_old_pages():
     )
     logger.debug(response.status_code)
     if response.status_code != 200:
-        logger.debug("Error: ", response.text)
+        logger.error("Error: ", response.text)
         return
 
     # これで作成日が古すぎる項目のページIDを取得できる。
     result = re.findall(r'"page","id":"(.*?)"', response.text)
+    logger.info(f"Deleting {len(result)} pages")
 
     # NotionAPIで、ページを削除するJSON
     payload_del = {"in_trash": True}
@@ -70,3 +72,4 @@ def delete_old_pages():
         response = requests.request(
             "PATCH", url=notion_url_page, json=payload_del, headers=headers
         )
+    logger.info("Delete old pages is done")
