@@ -136,6 +136,7 @@ class GagagaScraper(BaseScraper):
         # yyyy-mm-ddの形式の文字列にする。
         d = "".join(date_list_year)
         d = d.replace("月", "-")
+        return d
 
     def scrape(self) -> list[BookInfo]:
         soup = self.get_soup(self.urls[0])
