@@ -25,8 +25,15 @@ class BaseScraper:
         self.date = None
 
     def get_soup(self, url: str) -> BeautifulSoup:
-        time.sleep(1)
-        r = requests.get(url)
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.3",
+            "Cache-Control": "no-cache",
+        }
+        time.sleep(3)
+        r = requests.get(url, headers=headers)
+        logger.debug(f"Scraping URL: {url}")
+        logger.debug(f"Status code: {r.status_code}")
+        logger.debug(f"Headers: {r.headers}")
         if r.status_code != 200:
             request_error_mail(self.tag, r.status_code)
             return
@@ -245,11 +252,13 @@ class SneakerScraper(BaseScraper):
             "https://sneakerbunko.jp/product/"
             + self.today[0:4]
             + "/"
-            + self.today[5:7],
+            + self.today[5:7]
+            + "/",
             "https://sneakerbunko.jp/product/"
             + self.year
             + "/"
-            + self.next_month,
+            + self.next_month
+            + "/",
         ]
         super().__init__(urls)
         self.tag = "スニーカー"
