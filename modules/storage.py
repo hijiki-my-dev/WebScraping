@@ -9,8 +9,6 @@ logger = Logger(log_level)
 
 class StorageClient:
     def __init__(self, connection_string: str, container_name: str):
-        logger.debug(f"connection_string: {connection_string}")
-        logger.debug(f"container_name: {container_name}")
         self.blob_service_client = BlobServiceClient.from_connection_string(
             connection_string
         )
