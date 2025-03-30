@@ -30,3 +30,4 @@
     - Google Cloudへのデプロイに対応するため、app.pyやDockerfile等を追加
     - コードを分割し、全体を大幅に改修
     - タイプヒント等のリファクタと、ログの追加を実施
+    - 課金の関係からAzure Functions用のブランチを作成（azure）。mainブランチはGoogleCloudのまま。
