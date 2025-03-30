@@ -18,7 +18,9 @@ class NotionClient:
         else:
             self.notion_api_key = os.environ.get("NOTION_API_KEY")
             self.notion_database_id = os.environ.get("NOTION_DATABASE_ID")
-        self.notion_url = f"https://api.notion.com/v1/databases/{self.notion_database_id}/query"
+        self.notion_url = (
+            f"https://api.notion.com/v1/databases/{self.notion_database_id}/query"
+        )
 
         self.headers = {
             "Notion-Version": "2022-06-28",
@@ -29,9 +31,7 @@ class NotionClient:
     def get_current_pages(self) -> str:
         params = {"page_size": 100}
         time.sleep(1)
-        response = requests.request(
-            "POST", url=self.notion_url, headers=self.headers
-        )
+        response = requests.request("POST", url=self.notion_url, headers=self.headers)
 
         logger.debug(
             f"In NotionClient.get_current_pages status code: {response.status_code}"
@@ -56,9 +56,7 @@ class NotionClient:
                 response_text += response.text
                 if response.ok:
                     search_response_obj = response.json()
-                    pages_and_databases.extend(
-                        search_response_obj.get("results")
-                    )
+                    pages_and_databases.extend(search_response_obj.get("results"))
         else:
             request_error_mail("Notionのページ取得", response.status_code)
 

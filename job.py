@@ -30,9 +30,7 @@ def run() -> None:
         logger.info("Get reading book list from storage")
         storage_key = os.getenv("AZURE_STORAGE_CONNECTION_STRING", storage_container)
         storage_client = StorageClient(storage_key, storage_container)
-        reading_book_list = storage_client.get_reading_book_list(
-            storage_book_list_path
-        )
+        reading_book_list = storage_client.get_reading_book_list(storage_book_list_path)
     logger.info(f"Reading book list: {reading_book_list}")
 
     all_book_list = []

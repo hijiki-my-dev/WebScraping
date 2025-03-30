@@ -198,12 +198,8 @@ class GaScraper(BaseScraper):
         soup1 = self.get_soup(self.urls[0])
         soup2 = self.get_soup(self.urls[1])
 
-        elms1 = soup1.select(
-            ".newBook_gaBunko_wrap .title_area > .title > a > span"
-        )
-        elms2 = soup2.select(
-            ".newBook_gaBunko_wrap .title_area > .title > a > span"
-        )
+        elms1 = soup1.select(".newBook_gaBunko_wrap .title_area > .title > a > span")
+        elms2 = soup2.select(".newBook_gaBunko_wrap .title_area > .title > a > span")
 
         del elms1[1::2]
         del elms2[1::2]
