@@ -27,39 +27,50 @@ def HttpExampleFunc(req: func.HttpRequest) -> func.HttpResponse:
     run()
 
     # 特定のWebサイトにアクセス
-    # url = "https://dengekibunko.jp/product/newrelease-bunko.html"
-    # headers = {
-    #     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.3",
-    #     "Cache-Control": "no-cache",
-    # }
-    # time.sleep(3)
-    # response = requests.get(url, headers=headers)
-    # print(f"Scraping URL: {url}")
-    # print(f"Status code: {response.status_code}")
-    # print(f"Headers: {response.headers}")
+    url = "https://dengekibunko.jp/product/newrelease-bunko.html"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.3",
+        "Cache-Control": "no-cache",
+    }
+    time.sleep(3)
+    response = requests.get(url, headers=headers)
+    print(f"スクレイピングURL: {url}")
+    print(f"ステータスコード: {response.status_code}")
+    print(f"ヘッダー: {response.headers}")
 
 
-    # url = "https://mfbunkoj.jp/product/new-release.html"
-    # headers = {
-    #     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.3",
-    #     "Cache-Control": "no-cache",
-    # }
-    # time.sleep(3)
-    # response = requests.get(url, headers=headers)
-    # print(f"Scraping URL: {url}")
-    # print(f"Status code: {response.status_code}")
-    # print(f"Headers: {response.headers}")
+    url = "https://fantasiabunko.jp/product/"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.3",
+        "Cache-Control": "no-cache",
+    }
+    time.sleep(3)
+    response = requests.get(url, headers=headers)
+    print(f"スクレイピングURL: {url}")
+    print(f"ステータスコード: {response.status_code}")
+    print(f"ヘッダー: {response.headers}")
 
-    # url = "https://sneakerbunko.jp/product/2025/04/"
-    # headers = {
-    #     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.3",
-    #     "Cache-Control": "no-cache",
-    # }
-    # time.sleep(3)
-    # response = requests.get(url, headers=headers)
-    # print(f"Scraping URL: {url}")
-    # print(f"Status code: {response.status_code}")
-    # print(f"Headers: {response.headers}")
+    url = "https://sneakerbunko.jp/product/2025/04/"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.3",
+        "Cache-Control": "no-cache",
+    }
+    time.sleep(3)
+    response = requests.get(url, headers=headers)
+    print(f"スクレイピングURL: {url}")
+    print(f"ステータスコード: {response.status_code}")
+    print(f"ヘッダー: {response.headers}")
+
+    url = "https://ga.sbcr.jp/release/month_current/"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.3",
+        "Cache-Control": "no-cache",
+    }
+    time.sleep(3)
+    response = requests.get(url, headers=headers)
+    print(f"スクレイピングURL: {url}")
+    print(f"ステータスコード: {response.status_code}")
+    print(f"ヘッダー: {response.headers}")
 
 
 
