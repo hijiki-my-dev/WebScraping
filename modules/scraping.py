@@ -10,7 +10,8 @@ from bs4 import BeautifulSoup
 from utils import Logger, log_level, request_error_mail
 
 logger = Logger(log_level=log_level)
-
+time.sleep(1)
+logger.debug(f"IPアドレス: {requests.get("https://ifconfig.me").text}")
 
 @dataclass
 class BookInfo:
@@ -232,7 +233,6 @@ class GaScraper(BaseScraper):
 
 class SneakerScraper(BaseScraper):
     def __init__(self):
-        logger.debug(requests.get("https://ifconfig.me").text)
         dt_now = datetime.datetime.now()
         self.today = str(datetime.date.today())
         self.year = str(dt_now.year)
