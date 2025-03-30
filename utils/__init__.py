@@ -3,7 +3,7 @@ from utils.config import (
     environment,
     log_level,
     storage_book_list_path,
-    storage_bucket,
+    storage_container,
 )
 from utils.error_mail import request_error_mail
 from utils.logger import Logger

@@ -16,8 +16,8 @@ class NotionClient:
             self.notion_api_key = main_local.api_key
             self.notion_database_id = main_local.databaseid
         else:
-            self.notion_api_key = os.environ.get("NotionAPIKey")
-            self.notion_database_id = os.environ.get("NotionDatabaseID")
+            self.notion_api_key = os.environ.get("NOTION_API_KEY")
+            self.notion_database_id = os.environ.get("NOTION_DATABASE_ID")
         self.notion_url = f"https://api.notion.com/v1/databases/{self.notion_database_id}/query"
 
         self.headers = {

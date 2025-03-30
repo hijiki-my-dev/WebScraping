@@ -8,9 +8,12 @@ import time
 from utils import (environment,
     log_level,
     storage_book_list_path,
-    storage_bucket,
+    storage_container,
 )
-print(environment, log_level, storage_book_list_path, storage_bucket)
+
+from job import run
+from modules import delete_old_pages
+# print(environment, log_level, storage_book_list_path, storage_container)
 
 app = func.FunctionApp()
 
@@ -19,40 +22,46 @@ def HttpExampleFunc(req: func.HttpRequest) -> func.HttpResponse:
     print(f"IPアドレス: {requests.get('https://ifconfig.me').text}")
     logging.info('Python HTTP trigger function processed a request.')
 
+    delete_old_pages()
+    time.sleep(3)
+    run()
+
     # 特定のWebサイトにアクセス
-    url = "https://dengekibunko.jp/product/newrelease-bunko.html"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.3",
-        "Cache-Control": "no-cache",
-    }
-    time.sleep(3)
-    response = requests.get(url, headers=headers)
-    print(f"Scraping URL: {url}")
-    print(f"Status code: {response.status_code}")
-    print(f"Headers: {response.headers}")
+    # url = "https://dengekibunko.jp/product/newrelease-bunko.html"
+    # headers = {
+    #     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.3",
+    #     "Cache-Control": "no-cache",
+    # }
+    # time.sleep(3)
+    # response = requests.get(url, headers=headers)
+    # print(f"Scraping URL: {url}")
+    # print(f"Status code: {response.status_code}")
+    # print(f"Headers: {response.headers}")
 
 
-    url = "https://mfbunkoj.jp/product/new-release.html"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.3",
-        "Cache-Control": "no-cache",
-    }
-    time.sleep(3)
-    response = requests.get(url, headers=headers)
-    print(f"Scraping URL: {url}")
-    print(f"Status code: {response.status_code}")
-    print(f"Headers: {response.headers}")
+    # url = "https://mfbunkoj.jp/product/new-release.html"
+    # headers = {
+    #     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.3",
+    #     "Cache-Control": "no-cache",
+    # }
+    # time.sleep(3)
+    # response = requests.get(url, headers=headers)
+    # print(f"Scraping URL: {url}")
+    # print(f"Status code: {response.status_code}")
+    # print(f"Headers: {response.headers}")
 
-    url = "https://sneakerbunko.jp/product/2025/04/"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.3",
-        "Cache-Control": "no-cache",
-    }
-    time.sleep(3)
-    response = requests.get(url, headers=headers)
-    print(f"Scraping URL: {url}")
-    print(f"Status code: {response.status_code}")
-    print(f"Headers: {response.headers}")
+    # url = "https://sneakerbunko.jp/product/2025/04/"
+    # headers = {
+    #     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.3",
+    #     "Cache-Control": "no-cache",
+    # }
+    # time.sleep(3)
+    # response = requests.get(url, headers=headers)
+    # print(f"Scraping URL: {url}")
+    # print(f"Status code: {response.status_code}")
+    # print(f"Headers: {response.headers}")
+
+
 
 
 

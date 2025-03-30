@@ -25,8 +25,8 @@ def delete_old_pages() -> None:
         api_key = main_local.api_key
         notion_url_db = main_local.notionurldb
     else:
-        api_key = os.environ.get("NotionAPIKey")
-        notion_database_id = os.environ.get("NotionDatabaseID")
+        api_key = os.environ.get("NOTION_API_KEY")
+        notion_database_id = os.environ.get("NOTION_DATABASE_ID")
         notion_url_db = (
             f"https://api.notion.com/v1/databases/{notion_database_id}/query"
         )

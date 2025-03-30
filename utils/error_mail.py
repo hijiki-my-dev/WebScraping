@@ -32,8 +32,8 @@ def send_mail(mess: str) -> None:
         login_address = main_local.mail_address
         login_password = main_local.gmail_password
     else:
-        login_address = os.environ.get("MailAddress")
-        login_password = os.environ.get("MailPass")
+        login_address = os.environ.get("MAIL_ADDRESS")
+        login_password = os.environ.get("MAIL_PASS")
     server.login(login_address, login_password)
 
     message = MIMEMultipart(policy=policy.default)
