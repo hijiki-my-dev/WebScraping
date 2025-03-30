@@ -236,6 +236,7 @@ class GaScraper(BaseScraper):
 
 class SneakerScraper(BaseScraper):
     def __init__(self):
+        logger.debug(requests.get("https://ifconfig.me").text)
         dt_now = datetime.datetime.now()
         self.today = str(datetime.date.today())
         self.year = str(dt_now.year)
