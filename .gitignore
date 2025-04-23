@@ -5,6 +5,7 @@ tests/
 book_list.py
 book_list.txt
 Dockerfile_local
+local.settings.json
 
 
 # Byte-compiled / optimized / DLL files
