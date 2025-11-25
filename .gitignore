@@ -55,3 +55,4 @@ __queuestorage__
 __azurite_db*__.json
 /run_job.sh
 /logs/
+.last_run_date.txt
