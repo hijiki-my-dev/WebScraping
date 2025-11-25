@@ -1,6 +1,6 @@
-from modules.notion_client import NotionClient
-from modules.remove import delete_old_pages
-from modules.scraping import (
+from src.modules.notion_client import NotionClient
+from src.modules.remove import delete_old_pages
+from src.modules.scraping import (
     DengekiScraper,
     FantasiaScraper,
     GagagaScraper,
@@ -8,4 +8,4 @@ from modules.scraping import (
     MfScraper,
     SneakerScraper,
 )
-from modules.storage import StorageClient
+from src.modules.storage import StorageClient

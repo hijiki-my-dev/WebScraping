@@ -1,6 +1,7 @@
+import os
 import time
 
-from modules import (
+from src.modules import (
     DengekiScraper,
     FantasiaScraper,
     GagagaScraper,
@@ -10,13 +11,14 @@ from modules import (
     SneakerScraper,
     StorageClient,
 )
-from utils import (
+from src.utils import (
     Logger,
     environment,
     log_level,
+    program_finish_mail,
     reading_book_list,
     storage_book_list_path,
-    storage_bucket,
+    storage_container,
 )
 
 logger = Logger(log_level=log_level)
@@ -27,10 +29,9 @@ def run() -> None:
     logger.info("Start scraping")
     if not environment == "local":
         logger.info("Get reading book list from storage")
-        storage_client = StorageClient(storage_bucket)
-        reading_book_list = storage_client.get_reading_book_list(
-            storage_book_list_path
-        )
+        storage_key = os.getenv("AZURE_STORAGE_CONNECTION_STRING", storage_container)
+        storage_client = StorageClient(storage_key, storage_container)
+        reading_book_list = storage_client.get_reading_book_list(storage_book_list_path)
     logger.info(f"Reading book list: {reading_book_list}")
 
     all_book_list = []
@@ -75,10 +76,11 @@ def run() -> None:
                 check_flag,
             )
     logger.info("Finish all process")
+    program_finish_mail()
 
 
 if __name__ == "__main__":
-    from modules import delete_old_pages
+    from src.modules import delete_old_pages
 
     delete_old_pages()
     time.sleep(5)

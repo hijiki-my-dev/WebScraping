@@ -7,10 +7,12 @@ import bs4
 import requests
 from bs4 import BeautifulSoup
 
-from utils import Logger, log_level, request_error_mail
+from src.utils import Logger, log_level, request_error_mail
 
 logger = Logger(log_level=log_level)
-
+time.sleep(1)
+ip_address = requests.get("https://ifconfig.me").text
+logger.debug(f"IPアドレス: {ip_address}")
 
 @dataclass
 class BookInfo:
@@ -198,12 +200,8 @@ class GaScraper(BaseScraper):
         soup1 = self.get_soup(self.urls[0])
         soup2 = self.get_soup(self.urls[1])
 
-        elms1 = soup1.select(
-            ".newBook_gaBunko_wrap .title_area > .title > a > span"
-        )
-        elms2 = soup2.select(
-            ".newBook_gaBunko_wrap .title_area > .title > a > span"
-        )
+        elms1 = soup1.select(".newBook_gaBunko_wrap .title_area > .title > a > span")
+        elms2 = soup2.select(".newBook_gaBunko_wrap .title_area > .title > a > span")
 
         del elms1[1::2]
         del elms2[1::2]
@@ -236,7 +234,6 @@ class GaScraper(BaseScraper):
 
 class SneakerScraper(BaseScraper):
     def __init__(self):
-        logger.debug(requests.get("https://ifconfig.me").text)
         dt_now = datetime.datetime.now()
         self.today = str(datetime.date.today())
         self.year = str(dt_now.year)

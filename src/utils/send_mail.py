@@ -6,7 +6,7 @@ from email import policy
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from utils import environment
+from src.utils import environment
 
 
 # リクエストエラーが発生した際にメールを送る
@@ -16,6 +16,9 @@ def request_error_mail(
     message = f"スクレイピングプログラムの {error_point} において、リクエスト時にエラーが発生した可能性があります。HTTPステータスコードは{status_code}です。\n{additional_mess}"
     send_mail(message)
 
+def program_finish_mail() -> None:
+    message = "スクレイピングプログラムが正常に終了しました。"
+    send_mail(message)
 
 def send_mail(mess: str) -> None:
     # SMTPサーバーに接続
@@ -27,7 +30,7 @@ def send_mail(mess: str) -> None:
     server.starttls()
 
     if environment == "local":
-        import main_local
+        import src.main_local as main_local
 
         login_address = main_local.mail_address
         login_password = main_local.gmail_password
@@ -37,7 +40,7 @@ def send_mail(mess: str) -> None:
     server.login(login_address, login_password)
 
     message = MIMEMultipart(policy=policy.default)
-    message["Subject"] = "ラノベスクレイピングでのエラーの可能性"
+    message["Subject"] = "ラノベスクレイピング"
     message["From"] = "スクレイピング"
     message["To"] = login_address
     text = MIMEText(mess)

@@ -6,7 +6,7 @@ import time
 
 import requests
 
-from utils import Logger, environment, log_level
+from src.utils import Logger, environment, log_level
 
 logger = Logger(log_level)
 
@@ -20,13 +20,13 @@ def delete_old_pages() -> None:
 
     # まずは条件に合致する（この場合は古い情報）要素だけをNotionのDBから抜き出す。
     if environment == "local":
-        import main_local
+        import src.main_local as main_local
 
         api_key = main_local.api_key
         notion_url_db = main_local.notionurldb
     else:
-        api_key = os.environ.get("NotionAPIKey")
-        notion_database_id = os.environ.get("NotionDatabaseID")
+        api_key = os.environ.get("NOTION_API_KEY")
+        notion_database_id = os.environ.get("NOTION_DATABASE_ID")
         notion_url_db = (
             f"https://api.notion.com/v1/databases/{notion_database_id}/query"
         )

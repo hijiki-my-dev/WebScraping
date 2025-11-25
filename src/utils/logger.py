@@ -1,9 +1,4 @@
-from logging import (
-    DEBUG,
-    Formatter,
-    StreamHandler,
-    getLogger,
-)
+from logging import DEBUG, Formatter, StreamHandler, getLogger
 
 
 class Logger:
