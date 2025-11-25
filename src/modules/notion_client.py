@@ -3,7 +3,7 @@ import time
 
 import requests
 
-from utils import Logger, environment, log_level, request_error_mail
+from src.utils import Logger, environment, log_level, request_error_mail
 
 logger = Logger(log_level=log_level)
 
@@ -11,7 +11,7 @@ logger = Logger(log_level=log_level)
 class NotionClient:
     def __init__(self):
         if environment == "local":
-            import main_local
+            import src.main_local as main_local
 
             self.notion_api_key = main_local.api_key
             self.notion_database_id = main_local.databaseid

@@ -2,7 +2,7 @@ import ast
 
 from azure.storage.blob import BlobServiceClient
 
-from utils import Logger, log_level
+from src.utils import Logger, log_level
 
 logger = Logger(log_level)
 

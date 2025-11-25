@@ -2,9 +2,9 @@ import time
 
 import azure.functions as func
 
-from job import run
-from modules import delete_old_pages
-from utils import Logger, log_level
+from src.job import run
+from src.modules import delete_old_pages
+from src.utils import Logger, log_level
 
 logger = Logger(log_level=log_level)
 

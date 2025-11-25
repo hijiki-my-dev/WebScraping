@@ -3,6 +3,7 @@ main_local.py
 book_list.py
 book_list.txt
 Dockerfile_local
+実行方法.txt
 
 bin
 obj
@@ -52,3 +53,5 @@ __pycache__/
 __blobstorage__
 __queuestorage__
 __azurite_db*__.json
+/run_job.sh
+/logs/

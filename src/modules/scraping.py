@@ -7,11 +7,12 @@ import bs4
 import requests
 from bs4 import BeautifulSoup
 
-from utils import Logger, log_level, request_error_mail
+from src.utils import Logger, log_level, request_error_mail
 
 logger = Logger(log_level=log_level)
 time.sleep(1)
-logger.debug(f"IPアドレス: {requests.get("https://ifconfig.me").text}")
+ip_address = requests.get("https://ifconfig.me").text
+logger.debug(f"IPアドレス: {ip_address}")
 
 @dataclass
 class BookInfo:
