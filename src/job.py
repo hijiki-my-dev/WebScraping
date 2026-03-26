@@ -1,4 +1,3 @@
-import os
 import time
 
 from src.modules import (
@@ -9,29 +8,19 @@ from src.modules import (
     MfScraper,
     NotionClient,
     SneakerScraper,
-    StorageClient,
 )
 from src.utils import (
     Logger,
-    environment,
     log_level,
     program_finish_mail,
     reading_book_list,
-    storage_book_list_path,
-    storage_container,
 )
 
 logger = Logger(log_level=log_level)
 
 
 def run() -> None:
-    global reading_book_list
     logger.info("Start scraping")
-    if not environment == "local":
-        logger.info("Get reading book list from storage")
-        storage_key = os.getenv("AZURE_STORAGE_CONNECTION_STRING", storage_container)
-        storage_client = StorageClient(storage_key, storage_container)
-        reading_book_list = storage_client.get_reading_book_list(storage_book_list_path)
     logger.info(f"Reading book list: {reading_book_list}")
 
     all_book_list = []
