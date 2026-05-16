@@ -1,23 +1,17 @@
-import os
 import time
 
 import requests
+import src.main_local as main_local
 
-from src.utils import Logger, environment, log_level, request_error_mail
+from src.utils import Logger, log_level, request_error_mail
 
 logger = Logger(log_level=log_level)
 
 
 class NotionClient:
     def __init__(self):
-        if environment == "local":
-            import src.main_local as main_local
-
-            self.notion_api_key = main_local.api_key
-            self.notion_database_id = main_local.databaseid
-        else:
-            self.notion_api_key = os.environ.get("NOTION_API_KEY")
-            self.notion_database_id = os.environ.get("NOTION_DATABASE_ID")
+        self.notion_api_key = main_local.api_key
+        self.notion_database_id = main_local.databaseid
         self.notion_url = (
             f"https://api.notion.com/v1/databases/{self.notion_database_id}/query"
         )
@@ -30,7 +24,6 @@ class NotionClient:
 
     def get_current_pages(self) -> str:
         params = {"page_size": 100}
-        time.sleep(1)
         response = requests.request("POST", url=self.notion_url, headers=self.headers)
 
         logger.debug(

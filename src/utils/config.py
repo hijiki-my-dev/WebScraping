@@ -1,6 +1,3 @@
-from logging import DEBUG, INFO
+from logging import DEBUG
 
 log_level = DEBUG  # DEBUG, INFO
-environment = "local"  # local or prod
-storage_container = "book-scr-container"
-storage_book_list_path = "book_list.txt"
