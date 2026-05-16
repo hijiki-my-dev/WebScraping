@@ -4,9 +4,9 @@ import re
 import time
 
 import requests
-import src.main_local as main_local
 
 from src.utils import Logger, log_level
+from src.utils.config import settings
 
 logger = Logger(log_level)
 
@@ -19,8 +19,8 @@ def delete_old_pages() -> None:
     delete_limit_date = str(two_month_ago)
 
     # まずは条件に合致する（この場合は古い情報）要素だけをNotionのDBから抜き出す。
-    api_key = main_local.api_key
-    notion_url_db = main_local.notionurldb
+    api_key = settings.notion_api_key
+    notion_url_db = settings.notion_url_db
 
     # ヘッダー。これは固定
     headers = {

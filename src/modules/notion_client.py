@@ -1,17 +1,17 @@
 import time
 
 import requests
-import src.main_local as main_local
 
 from src.utils import Logger, log_level, request_error_mail
+from src.utils.config import settings
 
 logger = Logger(log_level=log_level)
 
 
 class NotionClient:
     def __init__(self):
-        self.notion_api_key = main_local.api_key
-        self.notion_database_id = main_local.databaseid
+        self.notion_api_key = settings.notion_api_key
+        self.notion_database_id = settings.notion_database_id
         self.notion_url = (
             f"https://api.notion.com/v1/databases/{self.notion_database_id}/query"
         )

@@ -5,7 +5,7 @@ from email import policy
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-import src.main_local as main_local
+from src.utils.config import settings
 
 
 # リクエストエラーが発生した際にメールを送る
@@ -28,8 +28,8 @@ def send_mail(mess: str) -> None:
     # 暗号化
     server.starttls()
 
-    login_address = main_local.mail_address
-    login_password = main_local.gmail_password
+    login_address = settings.mail_address
+    login_password = settings.gmail_password
     server.login(login_address, login_password)
 
     message = MIMEMultipart(policy=policy.default)
