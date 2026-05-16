@@ -1,18 +1,16 @@
 import datetime
 import re
-import time
 from dataclasses import dataclass
+import time
 
 import bs4
-import requests
 from bs4 import BeautifulSoup
+from playwright.sync_api import sync_playwright
 
 from src.utils import Logger, log_level, request_error_mail
 
 logger = Logger(log_level=log_level)
-time.sleep(1)
-ip_address = requests.get("https://ifconfig.me").text
-logger.debug(f"IPアドレス: {ip_address}")
+
 
 @dataclass
 class BookInfo:
@@ -27,20 +25,22 @@ class BaseScraper:
         self.date = None
 
     def get_soup(self, url: str) -> BeautifulSoup:
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.3",
-            "Cache-Control": "no-cache",
-        }
-        time.sleep(3)
-        r = requests.get(url, headers=headers)
-        logger.debug(f"Scraping URL: {url}")
-        logger.debug(f"Status code: {r.status_code}")
-        logger.debug(f"Headers: {r.headers}")
-        if r.status_code != 200:
-            request_error_mail(self.tag, r.status_code)
-            return
-        soup = BeautifulSoup(r.content, "html.parser")
-        return soup
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+            try:
+                time.sleep(1)
+                response = page.goto(url, timeout=30000)
+                logger.debug(f"Scraping URL: {url}")
+                logger.debug(f"Status code: {response.status if response else 'None'}")
+                if response is None or not response.ok:
+                    request_error_mail(self.tag, response.status if response else 0)
+                    return None
+                page.wait_for_load_state("networkidle")
+                content = page.content()
+            finally:
+                browser.close()
+        return BeautifulSoup(content, "html.parser")
 
     def set_book_info(
         self, elms: bs4.element.ResultSet, dates: list[str]
@@ -86,15 +86,15 @@ class DengekiScraper(BaseScraper):
 
 class MfScraper(BaseScraper):
     def __init__(self):
-        urls = ["https://mfbunkoj.jp/product/new-release.html"]
+        urls = ["https://www.kadokawa.co.jp/product/search/?itemIdKbn=1&itemIdKbn=4&labelsiteid=1005&lclasstype=label_site_book&releaseDate=0"]
         super().__init__(urls)
         self.tag = "MF"
 
     def scrape(self) -> list[BookInfo]:
         logger.info("Start scraping MF Bunko")
         soup = self.get_soup(self.urls[0])
-        elms = soup.select(".detail > h2 > a")
-        date_elms = soup.find_all("p", string=re.compile("発売日"))
+        elms = soup.select("h2.book-title")
+        date_elms = soup.find_all("span", class_="book-info-releasedate")
         date_iso_list = []
         for elm in date_elms:
             date_list = list(elm.text)[4:]

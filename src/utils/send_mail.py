@@ -1,4 +1,3 @@
-import os
 import smtplib
 
 # 文字コードを調整
@@ -6,7 +5,7 @@ from email import policy
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from src.utils import environment
+from src.utils.config import settings
 
 
 # リクエストエラーが発生した際にメールを送る
@@ -29,14 +28,8 @@ def send_mail(mess: str) -> None:
     # 暗号化
     server.starttls()
 
-    if environment == "local":
-        import src.main_local as main_local
-
-        login_address = main_local.mail_address
-        login_password = main_local.gmail_password
-    else:
-        login_address = os.environ.get("MailAddress")
-        login_password = os.environ.get("MailPass")
+    login_address = settings.mail_address
+    login_password = settings.gmail_password
     server.login(login_address, login_password)
 
     message = MIMEMultipart(policy=policy.default)
