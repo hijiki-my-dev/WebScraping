@@ -24,6 +24,7 @@ def run() -> None:
     logger.info(f"Reading book list: {reading_book_list}")
 
     all_book_list = []
+    # 特定のレーベルを指定する時はここをコメントアウト
     scraping_classes = [
         DengekiScraper,
         MfScraper,

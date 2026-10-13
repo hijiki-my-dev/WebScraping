@@ -5,6 +5,8 @@ book_list.py
 book_list.txt
 Dockerfile_local
 実行方法.txt
+.DS_Store
+.claude/
 
 bin
 obj

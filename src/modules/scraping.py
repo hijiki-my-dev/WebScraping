@@ -54,33 +54,32 @@ class BaseScraper:
 
 class DengekiScraper(BaseScraper):
     def __init__(self):
-        urls = ["https://dengekibunko.jp/product/newrelease-bunko.html"]
+        # urls = ["https://dengekibunko.jp/product/newrelease-bunko.html"]
+        urls = ["https://www.kadokawa.co.jp/product/search/?itemIdKbn=1&itemIdKbn=4&labelsiteid=1043&lclasstype=label_site_book&releaseDate=0"]
         super().__init__(urls)
         self.tag = "電撃"
 
     def scrape(self) -> list[BookInfo]:
         logger.info("Start scraping Dengeki Bunko")
         soup = self.get_soup(self.urls[0])
-        elms = soup.select(".p-books-media__title > a")
-        date_elms = soup.find_all("td", string=re.compile("日発売"))
+        elms = soup.select("h2.book-title")
+        date_elms = soup.find_all("span", class_="book-info-releasedate")
         date_iso_list = []
         for elm in date_elms:
-            date_list = list(elm.text)
+            date_list = list(elm.text)[4:]
             if date_list[6] == "月":
                 date_list.insert(5, "0")
             if date_list[9] == "日":
                 date_list.insert(8, "0")
 
-            d = "".join(date_list)
+            d = "".join(date_list[:11])
             d = d.replace("年", "-")
             d = d.replace("月", "-")
-            d = d.replace("日発売", "")
+            d = d.replace("日", "")
             logger.debug(f"Date for Dengeki: {d}")
 
             date_iso_list.append(d)
 
-        # スマホ用とPC用で、要素が重複。インデックスが奇数のものを削除。
-        del date_iso_list[1::2]
         return self.set_book_info(elms, date_iso_list)
 
 
